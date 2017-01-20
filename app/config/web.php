@@ -2,6 +2,7 @@
 $params = require(__DIR__ . '/params.php');
 $basePath =  dirname(__DIR__);
 $webroot = dirname($basePath);
+
 $config = [
     'id' => 'app',
     'basePath' => $basePath,
@@ -10,7 +11,12 @@ $config = [
     'language' => 'zh_CN',
     'runtimePath' => $webroot . '/runtime',
     'vendorPath' => $webroot . '/vendor',
+    //加入自定义组件
+    'aliases'=>[
+       '@common_classes' => $webroot."/components",
+   ],
     'components' => [
+
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'test',
@@ -26,8 +32,13 @@ $config = [
         ],
         'urlManager' => [
             'rules' => [
-                '<controller:\w+>/view/<slug:[\w-]+>' => '<controller>/view',
-                '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
+                //add by wanglei 加入接口
+               // 'apiwap/<model:\w+>(get|options)' => 'apiwap/list/<model>',
+               // 'postslist'=>'apiwap/list',
+                array('route'=>'apiwap/list', 'pattern' => 'apiwap/<model:\w+>', 'verb' => ['GET','OPTIONS'],'defaults'=>['<model>']),
+
+               '<controller:\w+>/view/<slug:[\w-]+>' => '<controller>/view',
+              '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
                 '<controller:\w+>/cat/<slug:[\w-]+>' => '<controller>/cat',
             ],
         ],
