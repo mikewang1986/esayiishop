@@ -33,12 +33,14 @@ $config = [
         'urlManager' => [
             'rules' => [
                 //add by wanglei 加入接口
-               // 'apiwap/<model:\w+>(get|options)' => 'apiwap/list/<model>',
-               // 'postslist'=>'apiwap/list',
                 array('route'=>'apiwap/list', 'pattern' => 'apiwap/<model:\w+>', 'verb' => ['GET','OPTIONS'],'defaults'=>['<model>']),
-
-               '<controller:\w+>/view/<slug:[\w-]+>' => '<controller>/view',
-              '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
+                array('route'=>'apiwap/view', 'pattern' => 'apiwap/<model:\w+>/<id:\d+>', 'verb' => ['GET','OPTIONS'],'defaults'=>['<model>','<id>']),
+                array('route'=>'apiwap/update', 'pattern' => 'apiwap/<model:\w+>/<id:\d+>', 'verb' => ['PUT','OPTIONS'],'defaults'=>['<model>','<id>']),
+                array('route'=>'apiwap/delete', 'pattern' => 'apiwap/<model:\w+>/<id:\d+>', 'verb' => ['DELETE','OPTIONS'],'defaults'=>['<model>','<id>']),
+                array('route'=>'apiwap/create', 'pattern' => 'apiwap/<model:\w+>', 'verb' =>['POST','OPTIONS'],'defaults'=>['<model>','<id>']),
+                array('route'=>'apiwap/update', 'pattern' => 'apiwap/<model:\w+>/<type:\w+>/<id:\d+>', 'verb' => 'PUT,OPTIONS'),
+                '<controller:\w+>/view/<slug:[\w-]+>' => '<controller>/view',
+                '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
                 '<controller:\w+>/cat/<slug:[\w-]+>' => '<controller>/cat',
             ],
         ],
