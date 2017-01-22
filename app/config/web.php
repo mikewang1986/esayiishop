@@ -2,7 +2,6 @@
 $params = require(__DIR__ . '/params.php');
 $basePath =  dirname(__DIR__);
 $webroot = dirname($basePath);
-
 $config = [
     'id' => 'app',
     'basePath' => $basePath,

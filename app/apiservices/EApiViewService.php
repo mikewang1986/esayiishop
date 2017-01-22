@@ -1,36 +1,34 @@
 <?php
 namespace app\apiservices;
+use yii\helpers\BaseJson;
+use app\components\RsaEncrypter;
 abstract class EApiViewService {
-
     const RESPONSE_NO = 'no';
     const RESPONSE_OK = 'ok';   //200
     const RESPONSE_NO_DATA = 'No data'; //400
     const RESPONSE_NOT_FOUND = 'Not found'; //404
     const RESPONSE_VALIDATION_ERRORS = 'Validation errors'; //400
-
     protected $results;
     public $output; // used for output data.
-
     public function __construct($value1 = null, $value2 = null, $value3 = null, $value4 = null) {
-        $this->results = new stdClass();
+        $this->results = new \stdClass();
     }
-
+    //基类修改
     public function loadApiViewData($pwd = false) {
         try {
             $this->loadData();
             $this->createOutput();
-        } catch (CDbException $cdbex) {
+        } catch (\yii\db\Exception $cdbex) {
             //var_dump($cdbex->getMessage());
             //@TODO log.
-            Yii::log($cdbex->getMessage(), CLogger::LEVEL_ERROR, __METHOD__);
+            \Yii::error($cdbex->getMessage());
             $this->output = array('status' => self::RESPONSE_NO, 'error' => '数据错误', 'errorCode' => ErrorList::BAD_REQUEST, 'errorMsg' => '数据错误', 'results'=>null);
-        } catch (CException $cex) {
+        } catch (\Exception $cex) {
             //var_dump($cex->getMessage());
             //@TODO log.
-            Yii::log($cex->getMessage(), CLogger::LEVEL_ERROR, __METHOD__);
+            \Yii::error($cex->getMessage());
             $this->output = array('status' => self::RESPONSE_NO, 'error' => $cex->getMessage(), 'errorCode' => ErrorList::BAD_REQUEST, 'errorMsg' => $cex->getMessage(), 'results'=>null);
         }
-
         // Converts array to stdClass object.
         if (is_array($this->output)) {
             $this->output = (object) $this->output;
@@ -38,7 +36,7 @@ abstract class EApiViewService {
         
         if ($pwd) {
             $rasConfig = CoreRasConfig::model()->getByClient("app");
-            $stroutput = CJSON::encode($this->output);
+            $stroutput = BaseJson::encode($this->output);
             $encrypet = new RsaEncrypter($rasConfig->public_key, $rasConfig->private_key);
             $sign = $encrypet->sign($stroutput); //base64 字符串加密
             $encrypet->verify($stroutput, $sign);
@@ -79,7 +77,7 @@ abstract class EApiViewService {
 
     protected function getTextAttribute($value, $ntext = true) {
         if ($ntext) {
-            return Yii::app()->format->formatNtext($value);
+            return Yii::$app->formatter->format($value);
         } else {
             return $value;
         }
@@ -100,7 +98,7 @@ abstract class EApiViewService {
     
     public function printr($data){
         echo '<pre>';
-        print_r(CJSON::decode(CJSON::encode($data)));
+        print_r(BaseJson::decode(BaseJson::encode($data)));
         echo '</pre>';
         exit;
         

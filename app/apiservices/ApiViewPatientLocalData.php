@@ -1,5 +1,5 @@
 <?php
-
+namespace app\apiservices;
 class ApiViewPatientLocalData extends EApiViewService {
     public function __construct() {
         parent::__construct();

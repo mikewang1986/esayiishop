@@ -1,7 +1,6 @@
 <?php
 namespace app\apiservices;
 class ErrorList {
-
     const ERROR_NONE = 0; // 没错误
     const BAD_REQUEST = 400;
     const UNAUTHORIZED = 401;
