@@ -142,13 +142,13 @@ abstract class EActiveRecord extends \yii\db\ActiveRecord {
      * Override parent implementation.
      */
 
-    public function findByPk($pk, $condition = '', $params = array()) {
+   /* public function findByPk($pk, $condition = '', $params = array()) {
         if ($pk === null) {
             return null;
         } else {
             return parent::findByPk($pk, $condition, $params);
         }
-    }
+    }*/
 
     /**
      * order by ids => 'order'=>FIELD(id, 2,3,1).
@@ -308,7 +308,9 @@ abstract class EActiveRecord extends \yii\db\ActiveRecord {
                 \Yii::info (get_class($this) . '.delete()', 'system.db.ar.CActiveRecord');
                 $now =  new \yii\db\Expression('NOW()');
                // return $this->updateByPk($this->id, array('date_deleted' => $now));
-                return $this->updateByPk($this->id, array('date_deleted' => $now));
+                $recordes=$this->findOne($this->id)->toArray();
+                //$objects=$this->findByPk($this->id);
+                return $this->updateAllByAttributes(array('date_deleted' => $now),$recordes);
             } else
                 throw new \Exception(\Yii::info('yii', 'The active record cannot be deleted because it is new.'));
         }
