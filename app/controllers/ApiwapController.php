@@ -270,8 +270,7 @@ class ApiwapController extends \yii\web\Controller
 
     public function actionView($model, $id)
     {
-      
-        
+
         // Check if id was submitted via GET
         if (isset($id) === false) {
             $this->_sendResponse(500, 'Error: Parameter <b>id</b> is missing');
@@ -351,7 +350,7 @@ class ApiwapController extends \yii\web\Controller
             break;
             default:
                 $this->_sendResponse(501, sprintf('Mode <b>view</b>  is not implemented for model <b>%s</b>', $model));
-                Yii::app()->end();
+                Yii::$app->end();
         }
         // Did we find the requested model? If not, raise an error
         if (is_null($output)) {
@@ -395,8 +394,7 @@ class ApiwapController extends \yii\web\Controller
                 } else {
                     $output['error'] = 'Wrong parameters.';
                 }
-                
-                break;
+             break;
             // 手机密码登录
             case 'userlogin': // remote user login.
                 if (isset($post['userLogin'])) {
@@ -409,7 +407,7 @@ class ApiwapController extends \yii\web\Controller
                 } else {
                     $output['errorMsg'] = 'Wrong parameters.';
                 }
-                break;
+            break;
             case 'usermobilelogin'://手机号和验证码登录
                 if (isset($post['userLogin'])) {
                     // get user ip from request.
@@ -546,7 +544,7 @@ class ApiwapController extends \yii\web\Controller
                 } else {
                     $output['errorMsg'] = 'Wrong parameters.';
                 }
-                break;
+             break;
              //支付内容
             case 'payping'://支付信息
                 $post = json_decode(file_get_contents('php://input'), true);
@@ -582,7 +580,7 @@ class ApiwapController extends \yii\web\Controller
                 } else {
                     $output['errorMsg'] = 'Wrong parameters.';
                 }
-                break;
+             break;
             case   'cancelFileAll':
                     if (isset($post['file'])) {
                         $values['token'] = $this->em_getallheaders();
@@ -597,7 +595,7 @@ class ApiwapController extends \yii\web\Controller
              break;
             default:
                 $this->_sendResponse(501, sprintf('Error: Invalid request', $model));
-                Yii::app()->end();
+                Yii::$app->end();
         }
         $this->renderJsonOutput($output);
     }
@@ -637,7 +635,7 @@ class ApiwapController extends \yii\web\Controller
                             }else{
                                 $output = $bookingMgr->actionCancelBooking($id,$userId);
                             }
-                        break;
+                    break;
                     default:
                         $this->_sendResponse(501, sprintf('Error: Invalid request', $type));
                         Yii::app()->end();
