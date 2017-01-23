@@ -1,6 +1,7 @@
 <?php
 namespace app\controllers;
 use Yii;
+//定义的共通
 use app\apiservices\EApiViewService;
 use app\apiservices\ErrorList;
 use app\apiservices\ApiViewPatientLocalData;
@@ -680,7 +681,7 @@ class ApiwapController extends \yii\web\Controller
         $userMgr = new UserManager();
         $user = $userMgr->loadUserAndTokenBytoken($values['token']);
         $values['username'] = (isset($user->token->username)) ? $user->token->username: NULL;
-        $output = new stdClass();
+        $output = new \stdClass();
         if (isset($values['username']) === false || isset($values['token']) === false) {
             $output->status = EApiViewService::RESPONSE_NO;
             $output->errorCode = ErrorList::FORBIDDEN;

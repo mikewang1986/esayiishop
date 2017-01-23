@@ -43,6 +43,12 @@ $config = [
                 '<controller:\w+>/cat/<slug:[\w-]+>' => '<controller>/cat',
             ],
         ],
+        //image扩展
+       /* 'image' => array(
+            'class' => 'app\extensions\image\CImageComponent',
+            // GD or ImageMagick
+            'driver' => 'GD',
+        ),*/
         'assetManager' => [
             // uncomment the following line if you want to auto update your assets (unix hosting only)
             //'linkAssets' => true,
