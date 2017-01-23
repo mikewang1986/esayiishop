@@ -1,5 +1,5 @@
 <?php
-
+namespace app\components;
 class StatCode {
 
     const ERROR_UNKNOWN = '未知';
