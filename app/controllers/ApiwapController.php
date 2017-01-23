@@ -3,6 +3,7 @@ namespace app\controllers;
 use Yii;
 use app\apiservices\EApiViewService;
 use app\apiservices\ErrorList;
+use app\apiservices\ApiViewPatientLocalData;
 
 class ApiwapController extends \yii\web\Controller
 {
@@ -156,7 +157,7 @@ class ApiwapController extends \yii\web\Controller
                 $apiService = new ApiViewDoctorSearchV7($values);
                 $output = $apiService->loadApiViewData();
             break;
-            case "userbooking"://需要修改
+            case "userbooking"://
                 $values = $_GET;
                 $values['token'] = $this->em_getallheaders();
                 $user = $this->userLoginRequired($values);
@@ -768,7 +769,7 @@ else {
             
             echo $body;
         }
-        Yii::app()->end();
+        Yii::$app->end();
     }
 
     private function _getStatusCodeMessage($status)
@@ -846,7 +847,7 @@ else {
             'hospitals' => array()
         );
         foreach ($hospitals as $hospital) {
-            $obj = new stdClass();
+            $obj = new \stdClass();
             foreach ($hospital as $key => $value) {
                 $obj->{$key} = $value;
                 $output['hospitals'][] = $obj;

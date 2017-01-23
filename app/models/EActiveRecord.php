@@ -309,7 +309,6 @@ abstract class EActiveRecord extends \yii\db\ActiveRecord {
                 $now =  new \yii\db\Expression('NOW()');
                // return $this->updateByPk($this->id, array('date_deleted' => $now));
                 $recordes=$this->findOne($this->id)->toArray();
-                //$objects=$this->findByPk($this->id);
                 return $this->updateAllByAttributes(array('date_deleted' => $now),$recordes);
             } else
                 throw new \Exception(\Yii::info('yii', 'The active record cannot be deleted because it is new.'));

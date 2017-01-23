@@ -1,5 +1,6 @@
 <?php
 namespace app\apiservices;
+use Yii;
 class ApiViewPatientLocalData extends EApiViewService {
     public function __construct() {
         parent::__construct();
@@ -14,7 +15,6 @@ class ApiViewPatientLocalData extends EApiViewService {
     protected function createOutput() {
 
         if (is_null($this->output)) {
-
             $this->output = array(
                 'status' => self::RESPONSE_OK,
                 'errorCode' => 0,
@@ -25,7 +25,7 @@ class ApiViewPatientLocalData extends EApiViewService {
     }
 
     public function loadSendCodeUrl(){
-        $this->setSendCodeUrl(Yii::app()->createAbsoluteUrl('/api/smsverifycode'));
+        $this->setSendCodeUrl(Yii::$app->urlManager->createAbsoluteUrl('/api/smsverifycode'));
     }
 
     private function setSendCodeUrl($data){
@@ -33,14 +33,14 @@ class ApiViewPatientLocalData extends EApiViewService {
     }
 
     public function loadLoginUrl(){
-        $this->setLoginUrl(Yii::app()->createAbsoluteUrl('/api/usermobilelogin'));
+        $this->setLoginUrl(Yii::$app->urlManager->createAbsoluteUrl('/api/usermobilelogin'));
     }
 
     private function setLoginUrl($data){
         $this->results->loginUrl = $data;
     }
     public function loadBookingListUrl(){
-        $this->setBookingListUrl(Yii::app()->createAbsoluteUrl('/api/userbooking'));
+        $this->setBookingListUrl(Yii::$app->urlManager->createAbsoluteUrl('/api/userbooking'));
     }
 
     private function setBookingListUrl($data){
