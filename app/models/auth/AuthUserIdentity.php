@@ -96,7 +96,6 @@ class AuthUserIdentity  extends User {
         if (is_null($this->token) || $this->token->isTokenValid() === false) {
             $this->errorCode = ErrorList::AUTH_TOKEN_INVALID;
         } else {
-
             $this->errorCode = ErrorList::ERROR_NONE;
             $this->user = $this->token->getUser();
         }
