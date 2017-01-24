@@ -165,6 +165,7 @@ class ApiwapController extends \yii\web\Controller
                 $values['token'] = $this->em_getallheaders();
                 $values['token']='1016D5DBDC4E2FFCF68317589031EEBB';
                 $user = $this->userLoginRequired($values);
+
                 if($user){
                     $apiService = new ApiViewBookingListV5($user,$values['bk_status'],true);
                     $output = $apiService->loadApiViewData();
@@ -700,12 +701,13 @@ class ApiwapController extends \yii\web\Controller
         }
        $authMgr = new AuthManager();
        $authUserIdentity = $authMgr->authenticateWapUserByToken($values['username'], $values['token'], $agent = 'wap');
-       if (is_null($authUserIdentity) || $authUserIdentity->isAuthenticated === false) {
+       if (is_null($authUserIdentity)) {
             $output->status =EApiViewService::RESPONSE_NO;
             $output->errorCode = ErrorList::BAD_REQUEST;
             $output->errorMsg = '用户名或token不正确';
             $this->renderJsonOutput($output);
         }
+
         /*else {
             $authTokenMsg = new AuthTokenUser();
             $authTokenMsg->durationTokenPatient($values['token'], $values['username']);

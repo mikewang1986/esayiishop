@@ -3,6 +3,7 @@ namespace app\models\auth;
 use Yii;
 use app\models\EActiveRecord;
 use app\models\user\User;
+use app\components\StatCode;
 /**
  * This is the model class for table "auth_token_user".
  *

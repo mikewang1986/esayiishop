@@ -262,12 +262,11 @@ abstract class EActiveRecord extends \yii\db\ActiveRecord {
         if (isset($attrs['date_deleted']) === false)
             $attrs['date_deleted'] = null;
         if (is_array($with)) {
-
-        return $this->find()->with($with)->where($attrs)->all();
+            return $this->find()->with($with)->where($attrs)->one();
        }
             //return $this->with($with)->findByAttributes($attrs);
         else {
-           return    $this->find()->where($attrs)->one();
+             return    $this->find()->where($attrs)->one();
             // echo $this->find()->where($attrs)->select()->createCommand()->getRawSql();
         }
             //return $this->findByAttributes($attrs);
