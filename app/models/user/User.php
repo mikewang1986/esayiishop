@@ -1,5 +1,5 @@
 <?php
-namespace app\models;
+namespace app\models\user;
 use Yii;
 use app\components\StatCode;
 /**
@@ -167,6 +167,7 @@ class User extends EActiveRecord
 
     public function checkUsernameExists($username) {
         $criteria = new \yii\db\ActiveQuery();
+        $criteria ->from('user');
         return $criteria->where(array('date_deleted'=>NULL,'username'=>$username))->exists();
        // return $this->exists('username=:username AND date_deleted is NULL', array(':username' => $username));
     }
@@ -221,8 +222,9 @@ class User extends EActiveRecord
 
     public function createCriteriaMedicalRecords() {
         $criteria = new \yii\db\ActiveQuery();
-        $criteria->andWhere('t.user_id= '.$this->id);
-        $criteria->orderby = 't.date_created ASC';
+        $criteria ->from('user');
+        $criteria->andWhere('user_id= '.$this->id);
+        $criteria->orderby = 'date_created ASC';
         $criteria::with(array('mrBookings'));
        // $criteria->with = array('mrBookings');
         return $criteria;

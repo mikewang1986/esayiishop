@@ -2,6 +2,7 @@
 namespace app\apiservices;
 use yii\helpers\BaseJson;
 use app\components\RsaEncrypter;
+use app\models\core\CoreRsaConfig;
 abstract class EApiViewService {
     const RESPONSE_NO = 'no';
     const RESPONSE_OK = 'ok';   //200
@@ -35,7 +36,7 @@ abstract class EApiViewService {
         }
         
         if ($pwd) {
-            $rasConfig = CoreRasConfig::model()->getByClient("app");
+            $rasConfig = CoreRsaConfig::findOne()->getByClient("app");
             $stroutput = BaseJson::encode($this->output);
             $encrypet = new RsaEncrypter($rasConfig->public_key, $rasConfig->private_key);
             $sign = $encrypet->sign($stroutput); //base64 字符串加密
@@ -91,7 +92,7 @@ abstract class EApiViewService {
      */
 
     protected function throwNoDataException($msg = self::RESPONSE_NO_DATA) {
-        throw new CException($msg);
+        throw new \Exception($msg);
     }
     
     public function printr($data){

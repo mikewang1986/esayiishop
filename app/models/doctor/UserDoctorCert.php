@@ -1,7 +1,6 @@
 <?php
-
-namespace app\models;
-
+namespace app\models\doctor;
+use app\models\EActiveRecord;
 use Yii;
 
 /**

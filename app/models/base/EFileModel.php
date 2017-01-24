@@ -1,6 +1,7 @@
 <?php
-namespace app\models;
+namespace app\models\base;
 use Yii;
+use app\models\EActiveRecord;
 /* Change apache\bin\php.ini settings to allow larger files.
  * post_max_size = 16m
  * upload_max_filesize = 16M
