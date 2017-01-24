@@ -5,7 +5,7 @@ use Yii;
 use app\apiservices\EApiViewService;
 use app\apiservices\ErrorList;
 use app\apiservices\ApiViewPatientLocalData;
-
+use app\models\UserManager;
 class ApiwapController extends \yii\web\Controller
 {
     // Members
@@ -161,6 +161,7 @@ class ApiwapController extends \yii\web\Controller
             case "userbooking"://
                 $values = $_GET;
                 $values['token'] = $this->em_getallheaders();
+                $values['token']='1016D5DBDC4E2FFCF68317589031EEBB';
                 $user = $this->userLoginRequired($values);
                 if($user){
                     $apiService = new ApiViewBookingListV5($user,$values['bk_status'],true);
@@ -680,6 +681,8 @@ class ApiwapController extends \yii\web\Controller
     {
         $userMgr = new UserManager();
         $user = $userMgr->loadUserAndTokenBytoken($values['token']);
+        print_r($user);
+        exit;
         $values['username'] = (isset($user->token->username)) ? $user->token->username: NULL;
         $output = new \stdClass();
         if (isset($values['username']) === false || isset($values['token']) === false) {

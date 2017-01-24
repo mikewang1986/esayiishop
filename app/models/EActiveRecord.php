@@ -189,7 +189,7 @@ abstract class EActiveRecord extends \yii\db\ActiveRecord {
         $idsstr=arrayToCsv($values);
         $criteria->andWhere($field, $values);
         if (is_array($with)) {
-            $criteria::with($with);
+            $criteria->with($with);
         }
         return $criteria->all();
         //return($this->findAll($criteria));
@@ -199,7 +199,7 @@ abstract class EActiveRecord extends \yii\db\ActiveRecord {
         $criteria = new \yii\db\ActiveQuery();
         $criteria->andWhere('t.date_deleted is NULL');
         if (is_array($with)) {
-            $criteria::with($with);
+            $criteria->with($with);
         }
         if (isset($options['order'])) {
             $criteria->orderBy = $options['order'];
@@ -256,15 +256,21 @@ abstract class EActiveRecord extends \yii\db\ActiveRecord {
      * @param type $with array of model's relations.
      * @return type 
      */
-    public function getByAttributes(array $attrs, $with = null) {
+    public function getByAttributes(array $attrs, $with = null)
+    {
+
         if (isset($attrs['date_deleted']) === false)
             $attrs['date_deleted'] = null;
-        if (is_array($with))
-            return $this::getByAttributes($attrs,$with);
+        if (is_array($with)) {
+
+        return $this->find()->with($with)->where($attrs)->all();
+       }
             //return $this->with($with)->findByAttributes($attrs);
-        else
-            return $this::getByAttributes($attrs);
-          //  return $this->findByAttributes($attrs);
+        else {
+           return    $this->find()->where($attrs)->one();
+            // echo $this->find()->where($attrs)->select()->createCommand()->getRawSql();
+        }
+            //return $this->findByAttributes($attrs);
     }
 
     /**
@@ -274,16 +280,17 @@ abstract class EActiveRecord extends \yii\db\ActiveRecord {
      * @return type 
      */
     public function getAllByAttributes(array $attrs, $with = null, $options = null) {
+     ;
         $criteria = new \yii\db\ActiveQuery();
-        $criteria->andWhere('t.date_deleted is NULL');
+        $criteria->andWhere(' date_deleted is NULL');
         foreach ($attrs as $attr => $value) {
             $criteria->andWhere(array($attr=>$value));
         }
         if (isset($with) && is_array($with)) {
-            $criteria::with = $with;
+            $criteria->with = $with;
         }
         if (isset($options['order'])) {
-            $criteria->orderup = $options['order'];
+            $criteria->orderBy = $options['order'];
         }
         if (isset($options['offset'])) {
             $criteria->offset = $options['offset'];

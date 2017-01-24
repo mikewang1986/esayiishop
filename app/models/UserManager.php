@@ -1,6 +1,8 @@
 <?php
 namespace app\models;
 use app\components\StatCode;
+use app\models\user\User;
+use app\models\auth\AuthTokenUser;
 class UserManager {
     public function createUserDoctor($mobile) {
         return $this->createUser($mobile, StatCode::USER_ROLE_DOCTOR);
@@ -498,13 +500,15 @@ class UserManager {
     }
 
     public function loadUserById($id, $with = null) {
-        return User::model()->getById($id, $with);
+        return User::find()->getById($id, $with);
     }
 
     public function loadUser($id, $with = null) {
-        $model = User::model()->getById($id, $with);
+        $usermodel=new User;
+        $model = $usermodel->getById($id, $with);
         if (is_null($model)) {
-            throw new CHttpException(404, 'Not found.');
+           // throw new CHttpException(404, 'Not found.');
+
         } else {
             return $model;
         }
@@ -513,9 +517,9 @@ class UserManager {
     //根据token得到usertoken信息和user信息
     public function loadUserAndTokenBytoken($token){
         $authtoken=new AuthTokenUser();
-        $model=$authtoken->getAllByToken($token,array('atuUser'));
+        $model=$authtoken->getAllByToken($token,null);
         if (!empty($model)) {
-            $outtoken=new stdClass();
+            $outtoken=new \stdClass();
             $outtoken->user=$model->getUser();
             $outtoken->token=$model;
             return $outtoken;
