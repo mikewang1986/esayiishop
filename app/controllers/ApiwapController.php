@@ -6,6 +6,8 @@ use app\apiservices\EApiViewService;
 use app\apiservices\ErrorList;
 use app\apiservices\ApiViewPatientLocalData;
 use app\models\UserManager;
+use app\models\User;
+use app\models\AuthManager;
 class ApiwapController extends \yii\web\Controller
 {
     // Members
@@ -681,8 +683,6 @@ class ApiwapController extends \yii\web\Controller
     {
         $userMgr = new UserManager();
         $user = $userMgr->loadUserAndTokenBytoken($values['token']);
-        print_r($user);
-        exit;
         $values['username'] = (isset($user->token->username)) ? $user->token->username: NULL;
         $output = new \stdClass();
         if (isset($values['username']) === false || isset($values['token']) === false) {
@@ -691,7 +691,6 @@ class ApiwapController extends \yii\web\Controller
             $output->errorMsg = '用户没有登陆或者没有该用户';
             $this->renderJsonOutput($output);
         }
-   
         //加入过期
         if(!$this->token_expired($user->token->time_expiry)){
             $output->status =EApiViewService::RESPONSE_NO;
@@ -802,7 +801,7 @@ else {
         $username = $_SERVER['HTTP_X_USERNAME'];
         $password = $_SERVER['HTTP_X_PASSWORD'];
         // Find the user
-        $user = User::model()->find('LOWER(username)=?', array(
+        $user = User::find('LOWER(username)=?', array(
             strtolower($username)
         ));
         if ($user === null) {

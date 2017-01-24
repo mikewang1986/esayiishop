@@ -15,7 +15,9 @@ $config = [
        '@common_classes' => $webroot."/components",
    ],
     'components' => [
-
+        'user' => [
+            'identityClass' => 'app\models\User',
+        ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'test',
