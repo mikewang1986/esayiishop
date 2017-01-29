@@ -1,14 +1,14 @@
 <?php
-
+namespace app\apiservices;
+use Yii;
 class ApiViewBookingListV5 extends EApiViewService {
-
     private $user;
     private $bk_status;
     private $isWap;
     //初始化类的时候将参数注入
     public function __construct($user,$bk_status, $isWap=false) {
         parent::__construct();
-        $this->results = new stdClass();
+        $this->results = new \stdClass();
         $this->user = $user;
         $this->bk_status = $bk_status;
         $this->isWap = $isWap;
@@ -42,7 +42,7 @@ class ApiViewBookingListV5 extends EApiViewService {
     private function setBookings($models) {
         if (arrayNotEmpty($models)) {
             foreach ($models as $model) {
-                $data = new stdClass();
+                $data = new \stdClass();
                 $data->id = $model->getId();
                 $data->userId = $model->getUserId();
                 $data->refNo = $model->getrefNo();
@@ -56,7 +56,7 @@ class ApiViewBookingListV5 extends EApiViewService {
                 $data->hpDeptName = $model->gethpDeptName();//科室
                 $data->dateStart = $model->getDateStart();
                 $data->dateEnd = $model->getDateEnd(); 
-                $data->actionUrl = Yii::app()->createAbsoluteUrl('/api/userbooking/' . $data->id);
+                $data->actionUrl = Yii::$app->urlManager->createAbsoluteUrl('/api/userbooking/' . $data->id);
                 //add by wanglei 
                 $data->booking_service_id = $model->booking_service_id;
                 $salemodel = SalesOrder::model()->getByBkRefNo($data->refNo);
@@ -76,7 +76,7 @@ class ApiViewBookingListV5 extends EApiViewService {
                                 $depositAmount = $sale->getFinalAmount();
                             } 
                             $depositTotalAmount = $sale->getFinalAmount();
-                            $depositarray=new stdClass();
+                            $depositarray=new \stdClass();
                             $depositarray->id=$sale->id;
                             $depositarray->user_id=$sale->user_id;
                             $depositarray->final_amount=$sale->final_amount;
