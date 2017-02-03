@@ -8,6 +8,7 @@ use app\apiservices\ApiViewPatientLocalData;
 use app\models\UserManager;
 use app\models\User;
 use app\models\AuthManager;
+use app\apiservices\ApiViewBookingListV5;
 class ApiwapController extends \yii\web\Controller
 {
     // Members
@@ -166,6 +167,7 @@ class ApiwapController extends \yii\web\Controller
                 $values['token']='EC8332DE96455458DF4F0D25CB725386';
                 $user = $this->userLoginRequired($values);
                 if($user){
+
                     $apiService = new ApiViewBookingListV5($user,$values['bk_status'],true);
                     $output = $apiService->loadApiViewData();
                 }
@@ -711,6 +713,7 @@ class ApiwapController extends \yii\web\Controller
             $authTokenMsg = new AuthTokenUser();
             $authTokenMsg->durationTokenPatient($values['token'], $values['username']);
         }*/
+
         return $authUserIdentity->getUser();
     }
     

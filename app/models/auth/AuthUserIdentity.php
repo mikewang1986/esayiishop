@@ -76,7 +76,6 @@ class AuthUserIdentity  extends User {
             $now = new \yii\db\Expression("NOW()");
             $this->user->setLastLoginTime($now);
             $this->user->update('last_login_time');
-
             $this->errorCode = ErrorList::ERROR_NONE;
         }
 
@@ -87,12 +86,14 @@ class AuthUserIdentity  extends User {
      * authenticates user by token and username.     
      */
     public function authenticateToken() {
+
         $tokenmodel=new AuthTokenUser;
         if($this->role == StatCode::USER_ROLE_PATIENT){
             $this->token = $tokenmodel->verifyTokenPatient($this->password, $this->username);
         }elseif($this->role == StatCode::USER_ROLE_DOCTOR){
             $this->token = $tokenmodel->verifyTokenDoctor($this->password, $this->username);
         }
+
         if (is_null($this->token) || $this->token->isTokenValid() === false) {
             $this->errorCode = ErrorList::AUTH_TOKEN_INVALID;
         } else {
@@ -108,6 +109,7 @@ class AuthUserIdentity  extends User {
     }
 
     public function getUser() {
+
         return $this->user;
     }
 

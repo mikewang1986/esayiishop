@@ -273,7 +273,7 @@ class AuthTokenUser extends EActiveRecord
     /*     * ****** Accessors ******* */
 
     public function getUser() {
-        return $this->gethasUser();
+        return $this->gethasUser()->one();
     }
 
     public function getToken() {

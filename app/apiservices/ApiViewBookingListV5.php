@@ -1,5 +1,6 @@
 <?php
 namespace app\apiservices;
+use app\models\booking\Booking;
 use Yii;
 class ApiViewBookingListV5 extends EApiViewService {
     private $user;
@@ -35,7 +36,10 @@ class ApiViewBookingListV5 extends EApiViewService {
 
     //加载booking的数据
     private function loadBookings() {
-        $models = Booking::model()->getAllByUserIdOrMobile($this->user->getId(), $this->user->getMobile(), null, array('order' => 'bk_status asc,id DESC'),$this->bk_status, null, $this->isWap);
+        $bookings=new Booking;
+        $models =$bookings->getAllByUserIdOrMobile($this->user->getId(), $this->user->getMobile(), null, array('order' => 'bk_status asc,id DESC'),$this->bk_status, null, $this->isWap);
+
+            // $models = Booking::model()->getAllByUserIdOrMobile($this->user->getId(), $this->user->getMobile(), null, array('order' => 'bk_status asc,id DESC'),$this->bk_status, null, $this->isWap);
         $this->setBookings($models);
     }
 
