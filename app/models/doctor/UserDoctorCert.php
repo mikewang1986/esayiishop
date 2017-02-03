@@ -28,7 +28,7 @@ use Yii;
  *
  * @property User $user
  */
-class UserDoctorCert extends \yii\db\ActiveRecord
+class UserDoctorCert extends EActiveRecord
 {
     /**
      * @inheritdoc

@@ -431,7 +431,6 @@ class UserManager {
             if ($checkVerifyCode) {
                 // Verifies AuthSmsVerify by using $mobile & $verifyCode.  
                 $userIp = Yii::app()->request->getUserHostAddress();
-
                 $authMgr = new AuthManager();
                 $authSmsVerify = $authMgr->verifyCodeForRegister($form->getUsername(), $form->getVerifyCode(), $userIp);
                 if ($authSmsVerify->isValid() === false) {

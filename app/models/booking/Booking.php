@@ -3,6 +3,7 @@ namespace app\models\booking;
 use Yii;
 use app\models\EActiveRecord;
 use app\components\StatCode;
+use app\models\doctor\Doctor;
 /**
  * This is the model class for table "booking".
  *
