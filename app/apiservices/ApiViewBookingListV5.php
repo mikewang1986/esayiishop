@@ -2,6 +2,7 @@
 namespace app\apiservices;
 use app\models\booking\Booking;
 use Yii;
+use app\models\sales\SalesOrder;
 class ApiViewBookingListV5 extends EApiViewService {
     private $user;
     private $bk_status;
@@ -38,7 +39,6 @@ class ApiViewBookingListV5 extends EApiViewService {
     private function loadBookings() {
         $bookings=new Booking;
         $models =$bookings->getAllByUserIdOrMobile($this->user->getId(), $this->user->getMobile(), null, array('order' => 'bk_status asc,id DESC'),$this->bk_status, null, $this->isWap);
-
             // $models = Booking::model()->getAllByUserIdOrMobile($this->user->getId(), $this->user->getMobile(), null, array('order' => 'bk_status asc,id DESC'),$this->bk_status, null, $this->isWap);
         $this->setBookings($models);
     }
@@ -56,14 +56,16 @@ class ApiViewBookingListV5 extends EApiViewService {
                 $data->doctorName = $model->getDoctorName();
                 $data->mobile = $model->mobile;
                 $data->expertName = $model->getExpertNameBooked();//医生
-                $data->hpName = $model->gethospitalName();//医院
+               $data->hpName = $model->gethospitalName();//医院
                 $data->hpDeptName = $model->gethpDeptName();//科室
                 $data->dateStart = $model->getDateStart();
                 $data->dateEnd = $model->getDateEnd(); 
                 $data->actionUrl = Yii::$app->urlManager->createAbsoluteUrl('/api/userbooking/' . $data->id);
                 //add by wanglei 
                 $data->booking_service_id = $model->booking_service_id;
-                $salemodel = SalesOrder::model()->getByBkRefNo($data->refNo);
+                $SalesOrders=new SalesOrder;
+                $salemodel = $SalesOrders->getByBkRefNo($data->refNo);
+
                 if(isset($salemodel)){
                    $serviceAmount=0;
                    $serviceTotalAmount=0;
@@ -98,7 +100,7 @@ class ApiViewBookingListV5 extends EApiViewService {
                                 $serviceAmount = $sale->getFinalAmount()+$serviceAmount;
                             }
                             $serviceTotalAmount = $sale->getFinalAmount()+$serviceTotalAmount;
-                            $salelist=new stdClass();
+                            $salelist=new \stdClass();
                             $salelist->id=$sale->id;
                             $salelist->user_id=$sale->user_id;
                             $salelist->final_amount=$sale->final_amount;

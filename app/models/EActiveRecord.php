@@ -279,9 +279,9 @@ abstract class EActiveRecord extends \yii\db\ActiveRecord {
      * @param type $with model's relations.
      * @return type 
      */
-    public function getAllByAttributes(array $attrs, $with = null, $options = null) {
+    public function getAllByAttributes(array $attrs, $with = null, $options = null,$classname=null) {
      ;
-        $criteria = new \yii\db\ActiveQuery();
+        $criteria = new \yii\db\ActiveQuery($classname);
         $criteria->andWhere(' date_deleted is NULL');
         foreach ($attrs as $attr => $value) {
             $criteria->andWhere(array($attr=>$value));
