@@ -4,6 +4,7 @@ use app\apiservices\EApiViewService;
 use app\apiservices\ErrorList;
 use app\components\StatCode;
 use app\models\auth\AuthUserIdentity;
+use app\models\auth\AuthTokenUser;
 class AuthManager {
 
     const ERROR_TOKEN_FAILED_CREATE = 101;  //  AuthTokenUser 创建失败
@@ -506,7 +507,6 @@ class AuthManager {
     public function createWapTokenUser($userId, $username, $userHostIp, $userMacAddress = null, $deActivateFlag = FALSE) {
     
         $tokenUser = new AuthTokenUser();
-        //$tokenUser->initModel($userId, $username, $userHostIp, $userMacAddress);
         $tokenUser->createWapTokenPatient($userId, $username, $userHostIp, $userMacAddress);
         if ($deActivateFlag) {
             // deActivate all this user's tokens before creating a new one.

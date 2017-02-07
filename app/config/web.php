@@ -15,9 +15,7 @@ $config = [
        '@common_classes' => $webroot."/components",
    ],
     'components' => [
-        'user' => [
-            'identityClass' => 'app\models\User',
-        ],
+    
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'test',
@@ -38,8 +36,8 @@ $config = [
                 array('route'=>'apiwap/view', 'pattern' => 'apiwap/<model:\w+>/<id:\d+>', 'verb' => ['GET','OPTIONS'],'defaults'=>['<model>','<id>']),
                 array('route'=>'apiwap/update', 'pattern' => 'apiwap/<model:\w+>/<id:\d+>', 'verb' => ['PUT','OPTIONS'],'defaults'=>['<model>','<id>']),
                 array('route'=>'apiwap/delete', 'pattern' => 'apiwap/<model:\w+>/<id:\d+>', 'verb' => ['DELETE','OPTIONS'],'defaults'=>['<model>','<id>']),
-                array('route'=>'apiwap/create', 'pattern' => 'apiwap/<model:\w+>', 'verb' =>['POST','OPTIONS'],'defaults'=>['<model>','<id>']),
-                array('route'=>'apiwap/update', 'pattern' => 'apiwap/<model:\w+>/<type:\w+>/<id:\d+>', 'verb' => 'PUT,OPTIONS'),
+                array('route'=>'apiwap/create', 'pattern' => 'apiwap/<model:\w+>', 'verb' =>['POST','OPTIONS'],'defaults'=>['<model>']),
+                array('route'=>'apiwap/update', 'pattern' => 'apiwap/<model:\w+>/<type:\w+>/<id:\d+>', 'verb' =>[ 'PUT','OPTIONS'],'defaults'=>['<model>','<id>']),
                 '<controller:\w+>/view/<slug:[\w-]+>' => '<controller>/view',
                 '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
                 '<controller:\w+>/cat/<slug:[\w-]+>' => '<controller>/cat',

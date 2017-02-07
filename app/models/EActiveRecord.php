@@ -326,13 +326,11 @@ abstract class EActiveRecord extends \yii\db\ActiveRecord {
      * @param array $fields - the fields to be updated.
      * @param array $attrs - the attributes for comparison.
      */
-    public function updateAllByAttributes(array $fields, array $attrs) {
-      //  $criteria = new CDbCriteria();
-        $criteria = new \yii\db\ActiveQuery();
+    public function updateAllByAttributes(array $fields, array $attrs,$classname=null) {
+        $criteria = new \yii\db\ActiveQuery($classname);
         if (is_array($attrs) && count($attrs) > 0) {
             foreach ($attrs as $attr => $value) {
                 $criteria->andWhere(array($attr=>$value));
-                //$criteria->addCondition($attr . '=' . $value);
             }
         }
         $objects=$criteria->asArray()->all();

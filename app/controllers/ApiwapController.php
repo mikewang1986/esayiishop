@@ -9,6 +9,8 @@ use app\models\UserManager;
 use app\models\User;
 use app\models\AuthManager;
 use app\apiservices\ApiViewBookingListV5;
+use yii\helpers\BaseJson;
+
 class ApiwapController extends \yii\web\Controller
 {
     // Members
@@ -59,7 +61,8 @@ class ApiwapController extends \yii\web\Controller
         header("Access-Control-Allow-Methods:DELETE,GET,HEAD,POST,PUT,OPTIONS");
         header('Access-Control-Allow-Credentials:true'); // 允许携带 用户认证凭据（也就是允许客户端发送的请求携带Cookie）
         $this->getmethod();
-        return parent::init();
+
+       // return parent::init();
 
 
     }
@@ -75,6 +78,7 @@ class ApiwapController extends \yii\web\Controller
     // Actions
     public function actionList($model)
     {
+
 
         $api = $this->getApiVersionFromRequest();
         // Get the respective model instance
@@ -164,7 +168,7 @@ class ApiwapController extends \yii\web\Controller
             case "userbooking"://
                 $values = $_GET;
                 $values['token'] = $this->em_getallheaders();
-                $values['token']='EC8332DE96455458DF4F0D25CB725386';
+               // $values['token']='EC8332DE96455458DF4F0D25CB725386';
                 $user = $this->userLoginRequired($values);
                 if($user){
                     $apiService = new ApiViewBookingListV5($user,$values['bk_status'],true);
@@ -275,7 +279,7 @@ class ApiwapController extends \yii\web\Controller
 
     public function actionView($model, $id)
     {
-
+      ;
         // Check if id was submitted via GET
         if (isset($id) === false) {
             $this->_sendResponse(500, 'Error: Parameter <b>id</b> is missing');
@@ -367,13 +371,13 @@ class ApiwapController extends \yii\web\Controller
 
     public function actionCreate($model)
     {
-        
+
         $get = $_GET;
         $post = $_POST;
-     
+
         if (empty($_POST)) {
             // application/json
-            $post = CJSON::decode($this->getPostData());
+            $post = BaseJson::decode($this->getPostData());
             
         } else {
             // application/x-www-form-urlencoded
@@ -528,7 +532,7 @@ class ApiwapController extends \yii\web\Controller
                     $values['url'] = Yii::app()->request->getUrl();
                     $values['url_referrer'] = Yii::app()->request->getUrlReferrer();
                     $values['user_agent'] = Yii::app()->request->getUserAgent();
-                   $model = new StatManager();
+                    $model = new StatManager();
                     $output = $model->createPatientStat($values);
                 }
             break;
@@ -544,7 +548,7 @@ class ApiwapController extends \yii\web\Controller
                     $values = $post['usertoken'];
                     $values['token'] = $this->em_getallheaders();
                     $authMgr = new AuthManager();
-                    $values['userHostIp'] = Yii::app()->request->userHostAddress;
+                    $values['userHostIp'] = Yii::$app->request->userHost;
                     $output = $authMgr->getTokenUserById($values);
                 } else {
                     $output['errorMsg'] = 'Wrong parameters.';
@@ -672,7 +676,9 @@ class ApiwapController extends \yii\web\Controller
 
     public function actionDelete($model, $id)
     {}
-
+    public function getPostData() {
+        return file_get_contents('php://input');
+    }
     /**
      * 用户登录验证
      *

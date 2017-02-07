@@ -192,10 +192,10 @@ class AuthTokenUser extends EActiveRecord
         $this->date_updated = new \yii\db\Expression("NOW()");
         return $this->update(array('is_active', 'date_updated'));
     }
-
+    //修改加入
     public function deActivateAllOldTokens() {
         $now = new \yii\db\Expression("NOW()");
-        return $this->updateAllByAttributes(array('is_active' => 0, 'date_updated' => $now), array('user_id' => $this->user_id, 'is_active' => '1'));
+        return $this->updateAllByAttributes(array('is_active' => 0, 'date_updated' => $now), array('user_id' => $this->user_id, 'is_active' => '1'),"app\models\auth\AuthTokenUser");
     }
 
     public function checkExpiry() {
