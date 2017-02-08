@@ -1,4 +1,5 @@
 <?php
+namespace app\components;
 class jsonRPCServer {
     /**
      *处理一个request类，这个类中绑定了一些请求参数

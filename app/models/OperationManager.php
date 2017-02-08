@@ -3,6 +3,7 @@ namespace app\models;
 use app\models\BookingCooperation;
 use app\components\StatCode;
 use Yii;
+use app\components\RPC;
 class OperationManager{
     public function createinformation($arr, $sendEmail = true){
         $output=new \stdClass();
@@ -15,7 +16,7 @@ class OperationManager{
         $model->disease_detail = $arr['disease_detail'];
         $model->mobile = $arr['mobile'];
        // $model->setAttributes($arr, true);
-        $model->user_host_ip = Yii::$app->request->userHost;
+        $model->user_host_ip = Yii::$app->request->userIP;
         if(!empty($arr['doctor_name'])){
             $model->doctor_name = $arr['doctor_name'];
         }
@@ -91,11 +92,12 @@ class OperationManager{
     {
         $rpc = new RPC();
         $client = $rpc->rpcClient(Yii::$app->params['rpcEmailUrl']);
-        $wifi_email=Yii::app()->params['wifi_email']; 
-        $email=Yii::app()->params['macity_email'];  
+        $wifi_email=Yii::$app->params['wifi_email'];
+        $email=Yii::$app->params['macity_email'];
         //新浪爱问
-        $sina_email=Yii::app()->params['sina_email']; 
-        $bookingCooperation=BookingCooperation::model()->getById($id);
+        $sina_email=Yii::$app->params['sina_email'];
+        $bookingCooperationmodel=new BookingCooperation;
+        $bookingCooperation=$bookingCooperationmodel->getById($id);
         if(empty($source)){
             if(!empty($wifi_email)){
                 if($bookingCooperation->source==1){

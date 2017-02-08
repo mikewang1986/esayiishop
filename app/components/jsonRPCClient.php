@@ -1,16 +1,14 @@
 <?php
-
+namespace app\components;
 /*
  */
 
 class jsonRPCClient {
-
     private $debug;
     private $url;
     // 请求id
     private $id;
     private $notification = false;
-
     /**
      * @param $url
      * @param bool $debug

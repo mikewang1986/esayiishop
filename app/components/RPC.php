@@ -1,11 +1,9 @@
 <?php
 namespace app\components;
 class RPC {
-
     function __construct() {
         
     }
-
     /**
      * rpc client
      */
@@ -41,9 +39,9 @@ class RPC {
             } else {
                 $errors = array();
                 $errors[] = "Not Found " . $class . " class";
-                throw new CException("Not Found " . $class . " class.");
+                throw new Exception("Not Found " . $class . " class.");
             }
-        } catch (CException $ex) {
+        } catch (\Exception $ex) {
             $output['status'] = false;
             $output['errors'] = $errors;
             $this->renderJsonOutput($output);

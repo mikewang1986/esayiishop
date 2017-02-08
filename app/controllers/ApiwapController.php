@@ -14,6 +14,7 @@ use app\apiservices\ApiViewSuccessCase;
 use app\apiservices\ApiViewExpertsShow;
 use app\apiservices\v12\ApiViewEvaluationListV12;
 use app\models\OperationManager;
+use app\models\FeedbackManager;
 class ApiwapController extends \yii\web\Controller
 {
     // Members
@@ -351,6 +352,7 @@ class ApiwapController extends \yii\web\Controller
                 $model = new OperationManager();
                 $output = $model->rpc_call($id);
             break;
+
             default:
                 $this->_sendResponse(501, sprintf('Mode <b>view</b>  is not implemented for model <b>%s</b>', $model));
                 Yii::$app->end();
@@ -596,6 +598,22 @@ class ApiwapController extends \yii\web\Controller
                         $output['errorMsg'] = 'Wrong parameters.';
                     }
              break;
+            //免费咨询
+            case 'feedbackwifi':
+                if(isset($post['wifi'])){
+                    $values = $post['wifi'];
+                    $model = new FeedbackManager();
+                    $output = $model->createfeedback($values);
+                }
+            break;
+            //信息预约提交
+            case 'admissionoperation':
+                if(isset($post['booking'])){
+                    $values = $post['booking'];
+                    $model = new OperationManager();
+                    $output = $model->createinformation($values);
+                }
+                break;
             default:
                 $this->_sendResponse(501, sprintf('Error: Invalid request', $model));
                 Yii::$app->end();

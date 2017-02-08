@@ -1,6 +1,7 @@
 <?php
 namespace app\models;
 use app\components\StatCode;
+use app\models\EActiveRecord;
 use Yii;
 /**
  * This is the model class for table "booking_cooperation".
@@ -30,7 +31,7 @@ use Yii;
  * @property integer $platform_service
  * @property string $suggested_remarks
  */
-class BookingCooperation extends \yii\db\ActiveRecord
+class BookingCooperation extends EActiveRecord
 {
     /**
      * @inheritdoc
