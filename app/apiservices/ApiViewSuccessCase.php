@@ -1,4 +1,6 @@
 <?php
+namespace app\apiservices;
+use Yii;
 class ApiViewSuccessCase extends EApiViewService {
     public function __construct($id) {
         parent::__construct();
@@ -14,7 +16,7 @@ class ApiViewSuccessCase extends EApiViewService {
 
     protected function createOutput() {
         if (is_null($this->output)) {
-            $this->output=new stdClass();
+            $this->output=new \stdClass();
             $this->output->status=self::RESPONSE_OK;
             $this->output->errorCode=0;
             $this->output->errorMsg='success';
@@ -27,7 +29,7 @@ class ApiViewSuccessCase extends EApiViewService {
      * @throws CException
      */
     private function loadSuccessCase() {
-        $data=Yii::app()->params['doctorcase']['case'];
+        $data=Yii::$app->params['doctorcase']['case'];
         $this->results = $data;
 
     }

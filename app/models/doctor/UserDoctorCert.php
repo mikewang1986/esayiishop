@@ -2,7 +2,6 @@
 namespace app\models\doctor;
 use app\models\EActiveRecord;
 use Yii;
-
 /**
  * This is the model class for table "user_doctor_cert".
  *

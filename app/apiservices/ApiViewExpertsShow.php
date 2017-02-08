@@ -1,4 +1,7 @@
 <?php
+namespace app\apiservices;
+use Yii;
+use app\models\doctor\DoctorSearch;
 class ApiViewExpertsShow extends EApiViewService {
     private $doctorSearch;  // DoctorSearch model.
     private $doctors;
@@ -7,11 +10,11 @@ class ApiViewExpertsShow extends EApiViewService {
     private $key="exportsshow_token";
     public function __construct($searchInputs) {
         $this->searchInputs = $searchInputs;
-        $this->doctorSearch = new DoctorSearch($this->searchInputs);
-        $doctorcontent=Yii::app()->params['doctorcase']['doctor'];
+        $this->doctorSearch = new DoctorSearch($this->searchInputs,null,"app\models\doctor\Doctor");
+        $doctorcontent=Yii::$app->params['doctorcase']['doctor'];
         $doctorstr=implode(",",$this->set_docotrsid($doctorcontent));
-        $this->doctorSearch->addSearchCondition("t.date_deleted is NULL");
-        $this->doctorSearch->addSearchCondition("t.id in (".$doctorstr.")");
+        $this->doctorSearch->criteria->andWhere("t.date_deleted is NULL");
+        $this->doctorSearch->criteria->andWhere("t.id in (".$doctorstr.")");
         parent::__construct();
     }
     /**
@@ -19,7 +22,7 @@ class ApiViewExpertsShow extends EApiViewService {
      * @param integer $diseaeId Disease.id     
      */
     protected function loadData() {
-        $ttdoctors = Yii::app()->cache->get($this->key);
+        $ttdoctors = Yii::$app->cache->get($this->key);
         if(empty($ttdoctors)){
             // load Doctors.
            $this->loadDoctors();
@@ -30,7 +33,7 @@ class ApiViewExpertsShow extends EApiViewService {
     }
     protected function createOutput() {
         if (is_null($this->output)) {
-            $this->output=new stdClass();
+            $this->output=new \stdClass();
             $this->output->status=self::RESPONSE_OK;
             $this->output->doctors=$this->doctors;
         }
@@ -43,7 +46,6 @@ class ApiViewExpertsShow extends EApiViewService {
      private function loadDoctors() {         
         if (is_null($this->doctors)) {
             $models = $this->doctorSearch->search();
-           
             if (arrayNotEmpty($models)) {
                 $this->setDoctors($models,$this->doctorsids);
             }
@@ -55,7 +57,7 @@ class ApiViewExpertsShow extends EApiViewService {
         foreach($doctorsids as $k=>$v){
             foreach ($models as $model) {
                 if($v==$model->getId()){
-                        $data = new stdClass();
+                        $data = new \stdClass();
                         $data->id = $model->getId();
                         $data->name = $model->getName();
                         $data->docName = $data->name;   //@TODO delete. not used by ios.
@@ -69,7 +71,7 @@ class ApiViewExpertsShow extends EApiViewService {
             }
         }
         $alive=43200;
-        Yii::app()->cache->set($this->key, $this->doctors ,$alive);
+        Yii::$app->cache->set($this->key, $this->doctors ,$alive);
     }
     /*生成描述信息数组和医生信息
      * @params $doctorlist 配置文件中doctorlist数组

@@ -10,7 +10,8 @@ use app\models\User;
 use app\models\AuthManager;
 use app\apiservices\ApiViewBookingListV5;
 use yii\helpers\BaseJson;
-
+use app\apiservices\ApiViewSuccessCase;
+use app\apiservices\ApiViewExpertsShow;
 class ApiwapController extends \yii\web\Controller
 {
     // Members
@@ -256,6 +257,18 @@ class ApiwapController extends \yii\web\Controller
                 break;
             case 'area':
                 $apiService = new ApiViewArea();
+                $output = $apiService->loadApiViewData();
+                break;
+            //成功案例
+            case "successfulcase":
+                $values = $_GET;
+                $apiService = new ApiViewSuccessCase($values);
+                $output = $apiService->loadApiViewData();
+                break;
+            //专家展示
+            case "expertsshow":
+                $values = $_GET;
+                $apiService = new ApiViewExpertsShow($values);
                 $output = $apiService->loadApiViewData();
                 break;
             default:
