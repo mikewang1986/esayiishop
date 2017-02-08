@@ -12,6 +12,8 @@ use app\apiservices\ApiViewBookingListV5;
 use yii\helpers\BaseJson;
 use app\apiservices\ApiViewSuccessCase;
 use app\apiservices\ApiViewExpertsShow;
+use app\apiservices\v12\ApiViewEvaluationListV12;
+use app\models\OperationManager;
 class ApiwapController extends \yii\web\Controller
 {
     // Members
@@ -53,7 +55,6 @@ class ApiwapController extends \yii\web\Controller
     }
     public function init()
     {
-
         $domainWhiteList = $this->domainWhiteList();
         $this->setHeaderSafeDomain($domainWhiteList, null);
         header('Access-Control-Allow-Headers: Origin,X-Requested-With,Authorization,Accept,Content-Type');
@@ -62,10 +63,7 @@ class ApiwapController extends \yii\web\Controller
         header("Access-Control-Allow-Methods:DELETE,GET,HEAD,POST,PUT,OPTIONS");
         header('Access-Control-Allow-Credentials:true'); // 允许携带 用户认证凭据（也就是允许客户端发送的请求携带Cookie）
         $this->getmethod();
-
        // return parent::init();
-
-
     }
     //options返回200
     public function getmethod(){
@@ -79,8 +77,6 @@ class ApiwapController extends \yii\web\Controller
     // Actions
     public function actionList($model)
     {
-
-
         $api = $this->getApiVersionFromRequest();
         // Get the respective model instance
         switch ($model) {
@@ -98,28 +94,18 @@ class ApiwapController extends \yii\web\Controller
                 $apiService = new ApiViewPatientLocalData();
                 $output = $apiService->loadApiViewData();
                 break;
-            case 'faculty'://科室
+           /* case 'faculty'://科室
                 $facultyMgr = new FacultyManager();
                 $output = $facultyMgr->loadFacultyList();
                 break;
             case 'overseas'://医院
                 $overseasMgr = new OverseasManager();
                 $output = $overseasMgr->loadHospitalsJson();
-                break;
+                break;*/
             case 'appversion'://android ,ios 版本号 参数  
                 $get = $_GET;
                 $appMgr = new AppManager();
                 $output = $appMgr->loadAppVersionJson($get);
-            break;
-            // app v2.0 api
-            case "appnav1"://首屏接口 
-                $apiService = new ApiViewAppNav1V6();
-                $output = $apiService->loadApiViewData();
-            break;
-            case "appnav2"://专家团队
-                    $values = $_GET;
-                    $apiService = new ApiViewExpertTeamSearchV5($values);
-                    $output = $apiService->loadApiViewData();
             break;
             case "appnav3": //合作医院
                 $values = $_GET;
@@ -244,17 +230,6 @@ class ApiwapController extends \yii\web\Controller
                 $auth_captcha=new AuthCaptchaManage();
                 $output = $auth_captcha->checkCaptcha($values); 
             break;
-            case "successfulcase":
-                $values = $_GET;
-                $apiService = new ApiViewSuccessCase($values);
-                $output = $apiService->loadApiViewData();
-                break;
-             //专家展示
-            case "expertsshow":
-                $values = $_GET;
-                $apiService = new ApiViewExpertsShow($values);
-                $output = $apiService->loadApiViewData();
-                break;
             case 'area':
                 $apiService = new ApiViewArea();
                 $output = $apiService->loadApiViewData();
@@ -362,13 +337,19 @@ class ApiwapController extends \yii\web\Controller
                 $apiService = new ApiViewCity($id);
                 $output = $apiService->loadApiViewData();
                 break;
-            //获得评价
+            //获得预约评价
             case 'getevaluation':
                 $values['token'] = $this->em_getallheaders();
+               // $values['token']="45D029852B05A45D6AD087088E1A9505";
                 $user = $this->userLoginRequired($values,true);
                 $user_id=$user->getId();
                 $apiService = new ApiViewEvaluationListV12($user_id,$id);
                 $output = $apiService->loadApiViewData();
+            break;
+            //发送指定邮件
+            case 'getrpc':
+                $model = new OperationManager();
+                $output = $model->rpc_call($id);
             break;
             default:
                 $this->_sendResponse(501, sprintf('Mode <b>view</b>  is not implemented for model <b>%s</b>', $model));

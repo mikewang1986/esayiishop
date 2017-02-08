@@ -23,6 +23,20 @@ $config = [
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
+        //memcache
+        'mecache' => [
+            'class' => 'yii\caching\MemCache',
+            'useMemcached' =>0, //这里简单说明一下 0是memcache, 1是memcached 两个是php里不同的扩展
+            'servers' => [
+                [
+                    'host'=>'120.26.107.48',
+                   'port'=>11211,
+                   'weight'=>60,
+                   // 'host' => 'localhost',
+                 //   'port' => 11211,
+                ]
+            ],
+        ],
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],

@@ -1,11 +1,14 @@
 <?php
+namespace app\apiservices\v12;
+use app\apiservices\EApiViewService;
+use app\models\evaluation\Evaluation;
 class ApiViewEvaluationListV12 extends EApiViewService{
     private $user_id;
     private $evaluation_id; 
     //初始化类的时候将参数注入
     public function __construct($user,$id) {
         parent::__construct();
-        $this->results = new stdClass();
+        $this->results = new \stdClass();
         $this->user_id = $user;
         $this->evaluation_id = $id;
     }
@@ -29,7 +32,7 @@ class ApiViewEvaluationListV12 extends EApiViewService{
     private function loadEvaluation(){
         $evaluation = new Evaluation();
         $bookingEvaluation = $evaluation->getInfobyuserid($this->evaluation_id,$this->user_id);
-        $std = new stdClass();
+        $std = new \stdClass();
         if($bookingEvaluation){
             $std->customerServiceEvaluation = $bookingEvaluation->customer_service_evaluation;
             $std->platformEvaluation = $bookingEvaluation->platform_evaluation;
