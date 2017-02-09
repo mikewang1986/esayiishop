@@ -554,7 +554,7 @@ class ApiwapController extends \yii\web\Controller
              break;
              //支付内容
             case 'payping'://支付信息
-                //$post = json_decode(file_get_contents('php://input'), true);
+                $post = json_decode(file_get_contents('php://input'), true);
                 if (isset($post)) {
                     //$values['token'] = $this->em_getallheaders();
                     //$user = $this->userLoginRequired($values);

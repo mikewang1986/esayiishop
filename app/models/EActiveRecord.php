@@ -1,6 +1,7 @@
 <?php
 namespace app\models;
 use yii\base\Model;
+use Yii;
 abstract class EActiveRecord extends \yii\db\ActiveRecord {
     const DB_FORMAT_DATETIME = 'Y-m-d H:i:s';
     const DB_FORMAT_DATE = 'Y-m-d';
@@ -114,7 +115,7 @@ abstract class EActiveRecord extends \yii\db\ActiveRecord {
 
     protected function getTextAttribute($value, $ntext = true) {
         if ($ntext) {
-            return Yii::$app->formatter->format($value);
+            return Yii::$app->formatter->asText($value);
         } else {
             return $value;
         }
@@ -267,7 +268,7 @@ abstract class EActiveRecord extends \yii\db\ActiveRecord {
             //return $this->with($with)->findByAttributes($attrs);
         else {
 
-            return    $this->find()->where($attrs)->one();
+             return    $this->find()->where($attrs)->one();
 
             // echo $this->find()->where($attrs)->select()->createCommand()->getRawSql();
         }

@@ -69,6 +69,7 @@ class PayManager {
         $pingCharge = \Pingpp\Charge::create($requestArray);
         $payment->setPingChargeId($pingCharge['id']);
         $payment->updateAttributes(array("ping_charge_id"=>$pingCharge['id']));
+
        // $payment->update(true,array('ping_charge_id'));
         $paymentData = new SalesPaymentData();
         $paymentData->initFromPayment($payment, $pingCharge);

@@ -41,7 +41,9 @@ class ApiViewSalesOrder extends EApiViewService {
 
     private function loadSalesOrder() {
         $saleordermodel=new SalesOrder;
+
         $model = $saleordermodel->getByRefNo($this->refNo);
+
         if (isset($model)) {
             $bookmodel=new Booking();
             $bookingModel = $bookmodel->getByRefNo($model->bk_ref_no);
@@ -95,7 +97,7 @@ class ApiViewSalesOrder extends EApiViewService {
             $data->mobile = $model->getMobile();
            $data->expertBooked = $model->getExpertBooked();
             $data->diseaseName = $model->getDiseaseName();
-          //  $data->diseaesDetail = $model->getDiseaseDetail();
+           $data->diseaesDetail = $model->getDiseaseDetail();
         } elseif ($model instanceof PatientBooking) {
             $data->expertBooked = ''; // join patient_booking.doctor_id;
             $data->mobile = '';
