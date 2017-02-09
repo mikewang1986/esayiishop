@@ -3,6 +3,7 @@ namespace app\apiservices;
 use app\models\booking\Booking;
 use app\models\sales\SalesOrder;
 use app\components\StatCode;
+use yii;
 class ApiViewSalesOrder extends EApiViewService {
     private $refNo;
     private $salesOrder;
@@ -16,9 +17,11 @@ class ApiViewSalesOrder extends EApiViewService {
         parent::__construct();
         $this->refNo = $refNo;
         $this->results = new \stdClass();
+
     }
 
     protected function loadData() {
+
         // load PatientBooking by creatorId.
         $this->loadSalesOrder();
         $this->loadBooking();
@@ -74,6 +77,7 @@ class ApiViewSalesOrder extends EApiViewService {
     //加载booking数据
     private function loadBooking() {
         $model = null;
+
         if ($this->bkType === StatCode::TRANS_TYPE_BK) {
             $bookmodel=new Booking();
             $model = $bookmodel->getById($this->bkId);
@@ -89,9 +93,9 @@ class ApiViewSalesOrder extends EApiViewService {
         if ($model instanceof Booking) {
             $data->patientName = $model->getContactName();
             $data->mobile = $model->getMobile();
-            $data->expertBooked = $model->getExpertBooked();
+           $data->expertBooked = $model->getExpertBooked();
             $data->diseaseName = $model->getDiseaseName();
-            $data->diseaesDetail = $model->getDiseaseDetail();
+          //  $data->diseaesDetail = $model->getDiseaseDetail();
         } elseif ($model instanceof PatientBooking) {
             $data->expertBooked = ''; // join patient_booking.doctor_id;
             $data->mobile = '';
@@ -110,6 +114,7 @@ class ApiViewSalesOrder extends EApiViewService {
         }
         $this->booking = $data;
         $this->results->booking = $this->booking;
+
     }
 
 }

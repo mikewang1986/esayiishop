@@ -267,7 +267,8 @@ abstract class EActiveRecord extends \yii\db\ActiveRecord {
             //return $this->with($with)->findByAttributes($attrs);
         else {
 
-             return    $this->find()->where($attrs)->one();
+            return    $this->find()->where($attrs)->one();
+
             // echo $this->find()->where($attrs)->select()->createCommand()->getRawSql();
         }
             //return $this->findByAttributes($attrs);

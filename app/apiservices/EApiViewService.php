@@ -3,6 +3,7 @@ namespace app\apiservices;
 use yii\helpers\BaseJson;
 use app\components\RsaEncrypter;
 use app\models\core\CoreRsaConfig;
+use Yii;
 abstract class EApiViewService {
     const RESPONSE_NO = 'no';
     const RESPONSE_OK = 'ok';   //200
