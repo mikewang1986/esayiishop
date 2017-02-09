@@ -5,7 +5,7 @@ class ApiViewAppCity extends EApiViewService {
     public function __construct($values) {
         parent::__construct();
         $this->has_team = isset($values['has_team']) ? $values['has_team'] : null;
-        $this->results = new stdClass();
+        $this->results = new \stdClass();
     }
 
     protected function loadData() {

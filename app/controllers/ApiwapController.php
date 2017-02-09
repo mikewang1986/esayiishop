@@ -15,6 +15,7 @@ use app\apiservices\ApiViewExpertsShow;
 use app\apiservices\v12\ApiViewEvaluationListV12;
 use app\models\OperationManager;
 use app\models\FeedbackManager;
+use app\models\PaymentManager;
 class ApiwapController extends \yii\web\Controller
 {
     // Members
@@ -524,14 +525,15 @@ class ApiwapController extends \yii\web\Controller
             case 'stat':
                 if(isset($post['stat'])){
                     $values = $post['stat'];
-                    $values['user_host_ip'] = Yii::app()->request->getUserHostAddress();
-                    $values['url'] = Yii::app()->request->getUrl();
-                    $values['url_referrer'] = Yii::app()->request->getUrlReferrer();
-                    $values['user_agent'] = Yii::app()->request->getUserAgent();
+                    $values['user_host_ip'] = Yii::$app->request->getUserIP();
+                    $values['url'] = Yii::$app->request->getUrl();
+                    $values['url_referrer'] = Yii::$app->request->getReferrer();
+                    $values['user_agent'] = Yii::$app->request->userAgent;
                     $model = new StatManager();
                     $output = $model->createPatientStat($values);
                 }
             break;
+            //应用程序统计
             case 'applogstat':
                 if(isset($post['applogstat'])){
                     $values = $post['applogstat'];
@@ -552,7 +554,7 @@ class ApiwapController extends \yii\web\Controller
              break;
              //支付内容
             case 'payping'://支付信息
-                $post = json_decode(file_get_contents('php://input'), true);
+                //$post = json_decode(file_get_contents('php://input'), true);
                 if (isset($post)) {
                     //$values['token'] = $this->em_getallheaders();
                     //$user = $this->userLoginRequired($values);

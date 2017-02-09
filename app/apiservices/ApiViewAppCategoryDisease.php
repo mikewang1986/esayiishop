@@ -1,7 +1,6 @@
 <?php
 
 class ApiViewAppCategoryDisease extends EApiViewService {
-
     private $diseaesUrl;
     private $doctorUrl;
     private $banners;   // clickable slide show

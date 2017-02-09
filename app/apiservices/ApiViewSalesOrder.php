@@ -1,20 +1,21 @@
 <?php
-
+namespace app\apiservices;
+use app\models\booking\Booking;
+use app\models\sales\SalesOrder;
+use app\components\StatCode;
 class ApiViewSalesOrder extends EApiViewService {
-
     private $refNo;
     private $salesOrder;
     private $bkId;
     private $bkType;
     private $booking;
     private $booking_service_id = null;
-
     //private $results;
     //初始化类的时候将参数注入
     public function __construct($refNo) {
         parent::__construct();
         $this->refNo = $refNo;
-        $this->results = new stdClass();
+        $this->results = new \stdClass();
     }
 
     protected function loadData() {
@@ -36,9 +37,11 @@ class ApiViewSalesOrder extends EApiViewService {
     }
 
     private function loadSalesOrder() {
-        $model = SalesOrder::model()->getByRefNo($this->refNo);
+        $saleordermodel=new SalesOrder;
+        $model = $saleordermodel->getByRefNo($this->refNo);
         if (isset($model)) {
-            $bookingModel = Booking::model()->getByRefNo($model->bk_ref_no);
+            $bookmodel=new Booking();
+            $bookingModel = $bookmodel->getByRefNo($model->bk_ref_no);
             if(isset($bookingModel)){
                 if($bookingModel->booking_service_id){
                     $this->booking_service_id = $bookingModel->booking_service_id;
@@ -49,7 +52,7 @@ class ApiViewSalesOrder extends EApiViewService {
     }
 
     private function setSalesOrder(SalesOrder $model) {
-        $data = new stdClass();
+        $data = new \stdClass();
         $data->id = $model->getId();
         $data->refNo = $model->ref_no;
         $data->bkRefNo = $model->bk_ref_no;
@@ -72,15 +75,17 @@ class ApiViewSalesOrder extends EApiViewService {
     private function loadBooking() {
         $model = null;
         if ($this->bkType === StatCode::TRANS_TYPE_BK) {
-            $model = Booking::model()->getById($this->bkId);
+            $bookmodel=new Booking();
+            $model = $bookmodel->getById($this->bkId);
         } elseif ($this->bkType === StatCode::TRANS_TYPE_PB) {
+            $bookmodel=new PatientBooking();
             $model = PatientBooking::model()->getById($this->bkId, array('pbDoctor', 'pbPatient'));
         }
         $this->setBooking($model);
     }
 
     private function setBooking($model) {
-        $data = new stdClass();
+        $data = new \stdClass();
         if ($model instanceof Booking) {
             $data->patientName = $model->getContactName();
             $data->mobile = $model->getMobile();
