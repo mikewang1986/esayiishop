@@ -16,6 +16,7 @@ use app\apiservices\v12\ApiViewEvaluationListV12;
 use app\models\OperationManager;
 use app\models\FeedbackManager;
 use app\models\PaymentManager;
+use app\models\booking\BookingServiceConfig;
 class ApiwapController extends \yii\web\Controller
 {
     // Members
@@ -610,6 +611,7 @@ class ApiwapController extends \yii\web\Controller
             break;
             //信息预约提交
             case 'admissionoperation':
+                $values['token'] = $this->em_getallheaders();
                 if(isset($post['booking'])){
                     $values = $post['booking'];
                     $model = new OperationManager();
@@ -918,6 +920,7 @@ else {
             }
         }
         $hearders = getallheaders();
+
         $token = isset($hearders['Authorization']) ? $hearders['Authorization'] : '';
         return $token;
     }

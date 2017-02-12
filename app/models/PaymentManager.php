@@ -3,6 +3,11 @@ namespace app\models;
 use Yii;
 use app\models\payment\CoreLogPayment;
 use app\apiservices\ErrorList;
+use app\models\sales\SalesOrder;
+use app\models\booking\Booking;
+use app\models\booking\BookingServiceConfig;
+use app\models\adminbooking\AdminBooking;
+use app\components\StatCode;
 class PaymentManager {
     public function BookingPayment(MedicalRecordBooking $mrBooking, $payMethod) {
         $payment = new MrBookingPayment();
@@ -255,100 +260,6 @@ class PaymentManager {
         }
     }
 
-    /*
-      public function doPayment(SalesTransaction $salesTran) {
-      require_once("alipay_service.php");
-      require_once("alipay_config.php");
-
-      //alipay uses gbk as charset, so have to load payment.description from in in gbk.
-      $connection = new CDbConnection(Yii::app()->db->connectionString, Yii::app()->db->username, Yii::app()->db->password);
-      $connection->charset = 'gbk';
-      $connection->active = true;
-
-      $row = $connection->createCommand()
-      ->select('description')
-      ->from(SalesPayment::model()->tableName())
-      ->where('tran_id=:tranId', array(':tranId' => $salesTran->getId()))
-      ->queryRow();
-
-
-      $payment = $salesTran->getSalesPayment();
-      $payment->description = $row['description'];
-
-      $return_url = Yii::app()->controller->createAbsoluteUrl('payment/result');
-
-      //for testing:
-      //   $payment->billing_amount = '0.03';
-      //  $payment->billing_currency = 'USD';
-      $subject = $payment->getDescription();
-
-      $parameter = array(
-      "service" => "create_forex_trade", //this is the service name
-      "partner" => $partner,
-      "return_url" => $return_url,
-      //   "notify_url" => $return_url,
-      "_input_charset" => $_input_charset,
-      "subject" => $subject,
-      "body" => "", //body is the description of the product , you'd beeter change it
-      "out_trade_no" => $payment->getUID(),
-      "total_fee" => $payment->getBillingAmount(), //the price of products
-      "currency" => "USD",
-      //"rmb_fee" => $payment->getBillingAmount(), // Used it for RMB, replace total_fee.
-      );
-      $alipay = new alipay_service($parameter, $security_code, $sign_type);
-      $requestUrl = $alipay->create_url();
-
-      $now = new CDbExpression("NOW()");
-      $payment->setBillingDate($now);
-      $payment->setRequestUrl($requestUrl);
-      $payment->update(array('billing_date', 'request_url'));
-
-      return $payment;
-      }
-     */
-    /**
-     *
-     * @param array $response data from $_GET.
-     */
-    /*
-      public function updatePaymentResult(SalesTransaction $salesTran, SalesPayment $payment, Booking $booking) {
-      $owner = $booking->getOwner();
-
-      //Start a new db transaction.
-      $dbTran = Yii::app()->db->beginTransaction();
-      try {
-      $salesTran->updateAsClosed();
-      $payment->updateAsClosed();
-      $booking->updateAsPaid();
-      $booking->addNotifyUser($owner);
-
-      $dbTran->commit();
-      } catch (CDbException $e) {
-      $salesTran->addError('error', '操作失败');
-      $dbTran->rollback();
-      Yii::log("Error occurred while saving sales transaction. Rolling back... . Failure reason as reported in exception: " . $e->getMessage(), CLogger::LEVEL_ERROR, __METHOD__);
-      throw new CHttpException($e->getMessage());
-      } catch (CException $e) {
-      $salesTran->addError('error', '操作失败');
-      $dbTran->rollback();
-      Yii::log("Error occurred while saving sales transaction. Rolling back... . Failure reason as reported in exception: " . $e->getMessage(), CLogger::LEVEL_ERROR, __METHOD__);
-      throw new CHttpException($e->getMessage());
-      }
-
-      return $salesTran;
-      }
-     * 
-     */
-    /*
-      public function loadPaymentByUID($uid, $with=null) {
-      $payment = SalesPayment::model()->getByUID($uid, $with);
-      if ($payment === null) {
-      throw new CHttpException(404, 'Failed to load payment data.');
-      }
-      return $payment;
-      }
-     * 
-     */
     //ping 支付提交
     public function payping($post){
             require_once(Yii::$app->basePath.'/sdk/pingpp-php-master/init.php');
@@ -393,13 +304,16 @@ class PaymentManager {
         $output = array('status' => 'no','errorCode' => 0,'errorMsg' =>'' ,'results' => array()); // default status is false.
         if($post['bk_ref_no']){
             $refno = $post['bk_ref_no'];
-            $model = SalesOrder::model()->getByAttributes(array('bk_ref_no' => $refno ,'order_type' => 'deposit'));
+            $salemodel=new SalesOrder();
+            $model = $salemodel->getByAttributes(array('bk_ref_no' => $refno ,'order_type' => 'deposit'));
             if($model){
-                $booking = Booking::model()->getByRefNo($model->bk_ref_no);
+                $bookmodel=new Booking;
+                $booking =$bookmodel->getByRefNo($model->bk_ref_no);
                 if ($booking->booking_service_id == BookingServiceConfig::BOOKING_SERVICE_FREE_LIINIC) {
-                    $adminDate = AdminBooking::model()->updateAllByAttributes(array('booking_status'=> StatCode::BK_STATUS_PROCESSING,'work_schedule'=> StatCode::BK_STATUS_PROCESSING ,'date_updated'=>new CDbExpression("NOW()")), array('ref_no' =>$refno));
-                    $orderDate = SalesOrder::model()->updateAllByAttributes(array('is_paid'=> SalesOrder::ORDER_PAIDED,'date_closed'=> new CDbExpression("NOW()")), array('bk_ref_no' => $refno ,'order_type' => 'deposit'));
-                    $bookingDate = Booking::model()->updateAllByAttributes(array('bk_status'=>  StatCode::BK_STATUS_PROCESSING), array('ref_no' => $refno));
+                    $adminbookingmodel=new AdminBooking();
+                    $adminDate = $adminbookingmodel->updateAllByAttributes(array('booking_status'=> StatCode::BK_STATUS_PROCESSING,'work_schedule'=> StatCode::BK_STATUS_PROCESSING ,'date_updated'=>new \yii\db\Expression("NOW()")), array('ref_no' =>$refno),'app\models\adminbooking\AdminBooking');
+                    $orderDate =  $salemodel->updateAllByAttributes(array('is_paid'=> SalesOrder::ORDER_PAIDED,'date_closed'=> new \yii\db\Expression("NOW()")), array('bk_ref_no' => $refno ,'order_type' => 'deposit'),'app\models\sales\SalesOrder');
+                    $bookingDate = $bookmodel->updateAllByAttributes(array('bk_status'=>  StatCode::BK_STATUS_PROCESSING), array('ref_no' => $refno),'app\models\booking\Booking');
                     if ($bookingDate && $orderDate && $adminDate) {
                          $output['status'] = 'ok';
                          $output['error_code'] = 200;
@@ -409,18 +323,16 @@ class PaymentManager {
                 } else {
                      $output['error_code'] = 200;
                      $output['errorMsg'] = 'SaleOrder is not free.';
-                     //$this->renderJsonOutput($output);
                 }
             }else{
                  $output['error_code'] = 200;
                  $output['errorMsg'] = 'SaleOrder not found.';
-                 //$this->renderJsonOutput($output);
+
             }
             
         }else{
             $output['error_code'] = 200;
             $output['errorMsg'] = 'Wrong parameters.';
-            //$this->renderJsonOutput($output);
         }
         return $output;
     }
