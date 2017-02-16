@@ -1,6 +1,7 @@
 <?php
 namespace app\apiservices;
 use Yii;
+use app\components\ErrorCode;
 class ApiViewPatientLocalData extends EApiViewService {
     public function __construct() {
         parent::__construct();
@@ -16,9 +17,9 @@ class ApiViewPatientLocalData extends EApiViewService {
 
         if (is_null($this->output)) {
             $this->output = array(
-                'status' => self::RESPONSE_OK,
-                'errorCode' => 0,
-                'errorMsg' => 'success',
+                //'status' => self::RESPONSE_OK,
+                'errorCode' => ErrorCode::ERROR_NO,
+                'errorMsg' => ErrorCode::getErrText(ErrorCode::ERROR_NO),
                 'results' => $this->results,
             );
         }

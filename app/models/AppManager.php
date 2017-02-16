@@ -1,6 +1,9 @@
 <?php
 namespace app\models;
 use Yii;
+use app\models\app\AppVersion;
+use app\components\ErrorCode;
+use app\components\StatCode;
 class AppManager {
     // app footer nav 1.
     public function loadNav1Json() {
@@ -25,7 +28,6 @@ class AppManager {
                     $data->teamName = $iteam->teamName;
                     $data->teamCode = $iteam->teamCode;
                     $data->introImageUrl = $iteam->introImageUrl;
-                    // $data->teamUrl = Yii::app()->createAbsoluteUrl("api/expertteam", array('id' => $iteam->teamId)); 
                     $data->teamUrl = $iteam->teamUrl;
                     $teamIntroList[] = $data;
                 }
@@ -52,7 +54,8 @@ class AppManager {
     }
 
     public function loadCurrentIOSUrl() {
-        $model = AppVersion::model()->getLatestActiveVersionByOS('ios');
+        $appversionmodel=new AppVersion;
+        $model = $appversionmodel->getLatestActiveVersionByOS('ios');
         if (isset($model)) {
             return $model->getAppDownloadUrl();
         } else {
@@ -61,7 +64,8 @@ class AppManager {
     }
 
     public function loadCurrentAndroidUrl() {
-        $model = AppVersion::model()->getLatestActiveVersionByOS('android');
+        $appversionmodel=new AppVersion;
+        $model = $appversionmodel->getLatestActiveVersionByOS('android');
         if (isset($model)) {
             return $model->getAppDownloadUrl();
         } else {
@@ -72,7 +76,6 @@ class AppManager {
     public function loadAppVersionJson($inputs) {
         $appVersion = $this->loadAppVersion($inputs);
         $output = array('appversion' => $appVersion);
-
         return $output;
     }
 
@@ -80,21 +83,21 @@ class AppManager {
         $output = array();
         $errors = $this->validateAppVersionInputs($inputs);
         if (empty($errors) === false) {
-            // has error, so return error.
             $output['errors'] = $errors;
             return $output;
         }
         $appVersionNo = $inputs['app_version'];
         $os = $inputs['os'];
         $app_name = isset($inputs['app_name']) ? $inputs['app_name'] : StatCode::APP_NAME_MYZD;
-        $modelAppVersion = AppVersion::model()->getLastestVersionByOSAndAppName($os, $app_name);
+        $appversionmodel=new AppVersion;
+        $modelAppVersion = $appversionmodel->getLastestVersionByOSAndAppName($os, $app_name);
         if (isset($modelAppVersion) === false) {
             $errors['app_version'] = 'No data.';
             $output['errors'] = $errors;
             return $output;
         }
 
-        $appObj = new stdClass();
+        $appObj = new \stdClass();
         $appObj->app_version = $appVersionNo;
         $appObj->cur_app_version = $modelAppVersion->getAppVersion();
         $appObj->cur_app_dl_url = $modelAppVersion->getAppDownloadUrl();

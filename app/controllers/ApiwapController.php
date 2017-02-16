@@ -17,6 +17,9 @@ use app\models\OperationManager;
 use app\models\FeedbackManager;
 use app\models\PaymentManager;
 use app\models\booking\BookingServiceConfig;
+use app\models\StatManager;
+use app\components\ErrorCode;
+use app\models\AppManager;
 class ApiwapController extends \yii\web\Controller
 {
     // Members
@@ -85,9 +88,9 @@ class ApiwapController extends \yii\web\Controller
         switch ($model) {
             case 'dataversion'://数据版本号
                 $output= new \stdClass();
-                $output->status=EApiViewService::RESPONSE_OK;
-                $output->errorCode=ErrorList::ERROR_NONE;
-                $output->errorMsg='success';
+              //  $output->status=EApiViewService::RESPONSE_OK;
+                $output->errorCode=ErrorCode::ERROR_NO;
+                $output->errorMsg=ErrorCode::getErrText(ErrorCode::ERROR_NO);
                 $output->results=array(
                     'version' => '20151215',
                     'localdataUrl' => Yii::$app->urlManager->createUrl('/api/localdata'),
@@ -96,7 +99,7 @@ class ApiwapController extends \yii\web\Controller
             case 'localdata'://本地需要缓存的数据
                 $apiService = new ApiViewPatientLocalData();
                 $output = $apiService->loadApiViewData();
-                break;
+            break;
            /* case 'faculty'://科室
                 $facultyMgr = new FacultyManager();
                 $output = $facultyMgr->loadFacultyList();
@@ -343,7 +346,6 @@ class ApiwapController extends \yii\web\Controller
             //获得预约评价
             case 'getevaluation':
                 $values['token'] = $this->em_getallheaders();
-               // $values['token']="45D029852B05A45D6AD087088E1A9505";
                 $user = $this->userLoginRequired($values,true);
                 $user_id=$user->getId();
                 $apiService = new ApiViewEvaluationListV12($user_id,$id);
@@ -395,11 +397,12 @@ class ApiwapController extends \yii\web\Controller
                 if (isset($post['userRegister'])) {
                     $values = $post['userRegister'];
                     $values['userHostIp'] = Yii::app()->request->userHostAddress;
-                    $values['agent_parmas'] = 'wap';
+                    //$values['agent_parmas'] = 'wap';
                     $userMgr = new UserManager();
                     $output = $userMgr->apiTokenUserRegister($values);
                 } else {
-                    $output['error'] = 'Wrong parameters.';
+                    $output['errorCode'] = ErrorCode::ERROR_WRONG_PARAMETERS;
+                    $output['errorMsg'] = ErrorCode::getErrText(ErrorCode::ERROR_WRONG_PARAMETERS);
                 }
              break;
             // 手机密码登录
@@ -709,14 +712,14 @@ class ApiwapController extends \yii\web\Controller
         $values['username'] = (isset($user->token->username)) ? $user->token->username: NULL;
         $output = new \stdClass();
         if (isset($values['username']) === false || isset($values['token']) === false) {
-            $output->status = EApiViewService::RESPONSE_NO;
+           // $output->status = EApiViewService::RESPONSE_NO;
             $output->errorCode = ErrorList::FORBIDDEN;
             $output->errorMsg = '用户没有登陆或者没有该用户';
             $this->renderJsonOutput($output);
         }
         //加入过期
         if(!$this->token_expired($user->token->time_expiry)){
-            $output->status =EApiViewService::RESPONSE_NO;
+           // $output->status =EApiViewService::RESPONSE_NO;
             $output->errorCode = ErrorList::UNAUTHORIZED;
             $output->errorMsg = 'token过期';
             $this->renderJsonOutput($output);
@@ -724,16 +727,11 @@ class ApiwapController extends \yii\web\Controller
        $authMgr = new AuthManager();
        $authUserIdentity = $authMgr->authenticateWapUserByToken($values['username'], $values['token'], $agent = 'wap');
        if (is_null($authUserIdentity)) {
-            $output->status =EApiViewService::RESPONSE_NO;
+            //$output->status =EApiViewService::RESPONSE_NO;
             $output->errorCode = ErrorList::BAD_REQUEST;
             $output->errorMsg = '用户名或token不正确';
             $this->renderJsonOutput($output);
         }
-
-        /*else {
-            $authTokenMsg = new AuthTokenUser();
-            $authTokenMsg->durationTokenPatient($values['token'], $values['username']);
-        }*/
 
         return $authUserIdentity->getUser();
     }
