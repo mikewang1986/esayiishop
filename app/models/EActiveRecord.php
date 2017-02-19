@@ -335,7 +335,9 @@ abstract class EActiveRecord extends \yii\db\ActiveRecord {
                 $criteria->andWhere(array($attr=>$value));
             }
         }
-        $objects=$criteria->asArray()->all();
+
+        $objects=$criteria->asArray()->one();
+
         return $this->updateAll($fields, $objects);
     }
 

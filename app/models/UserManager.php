@@ -238,11 +238,12 @@ class UserManager {
         $authMgr = new AuthManager();
         $authSmsVerify = $authMgr->verifyCodeForRegister($mobile, $verifyCode, $userHostIp);
 
-       /* if ($authSmsVerify->isValid() === false) {
+
+        if ($authSmsVerify->isValid() === false) {
             $output['errorCode'] = ErrorCode::ERROR_WRONG_SMSCODE_VERIFICATION;
             $output['errorMsg'] = ErrorCode::getErrText(ErrorCode::ERROR_WRONG_SMSCODE_VERIFICATION);
             return $output;
-        }*/
+        }
 
 
         $ussrmodel=new User();
@@ -257,6 +258,7 @@ class UserManager {
         // success.
         // Creates a new User model.
         $user = $this->doRegisterUser($mobile, $password);
+
         if ($user->hasErrors()) {
             // error, so return errors.
             $array= $user->getFirstErrors();
@@ -275,9 +277,9 @@ class UserManager {
             $output['errorMsg'] = ErrorCode::getErrText(ErrorCode::ERROR_NO);
         }
         // deactive current smsverify.
-        if (isset($authSmsVerify)) {
+      /*  if (isset($authSmsVerify)) {
             $authMgr->deActiveAuthSmsVerify($authSmsVerify);
-        }
+        }*/
         return $output;
     }
 

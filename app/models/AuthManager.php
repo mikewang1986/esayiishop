@@ -253,7 +253,7 @@ class AuthManager {
             $smsVerify->addError('code', AuthSmsVerify::getErrorMessage(AuthSmsVerify::ERROR_NOT_FOUND));
         } else {
 
-            $AuthSmsVerify->checkValidity(true,true);
+            $smsVerify->checkValidity(true,true);
         }
 
         return $smsVerify;
@@ -481,15 +481,9 @@ class AuthManager {
     //患者用户： USER_ROLE_PATIENT
     public function createTokenUser($userId, $username, $userHostIp, $userMacAddress = null, $deActivateFlag = true) {
 
-        $tokenUser = new AuthTokenUser();
-        //$tokenUser->initModel($userId, $username, $userHostIp, $userMacAddress);
-        $tokenUser->createTokenPatient($userId, $username, $userHostIp, $userMacAddress);
-        if ($deActivateFlag) {
-            // deActivate all this user's tokens before creating a new one.
-            $tokenUser->deActivateAllOldTokens($userId);
-        }
-        $tokenUser->save();
-        return $tokenUser;
+        $token = strtoupper(substr(str_shuffle(MD5(microtime())), 0, 32));
+        yii::app()->cache->set($token, $userId, 5184000);
+        return $token;
     }
 
     // 医生用户： USER_ROLE_DOCTOR
