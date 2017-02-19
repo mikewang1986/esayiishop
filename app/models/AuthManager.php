@@ -5,7 +5,10 @@ use app\apiservices\ErrorList;
 use app\components\StatCode;
 use app\models\auth\AuthUserIdentity;
 use app\models\auth\AuthTokenUser;
+use app\models\user\User;
+use Yii;
 use app\models\auth\AuthSmsVerify;
+use app\components\ErrorCode;
 class AuthManager {
 
     const ERROR_TOKEN_FAILED_CREATE = 101;  //  AuthTokenUser 创建失败
@@ -60,19 +63,27 @@ class AuthManager {
      * @return string
      */
     public function apiTokenUserLoginByPassword($values) {
-        $output = array('status' => 'no','errorCode' => 0,'errorMsg' =>'' ,'results' => array());
-        // TODO: wrap the following method. first, validates the parameters in $values.        
         if (isset($values['username']) == false || isset($values['password']) == false) {
-            $output['errorCode'] = 400;
-            $output['errorMsg'] = 'Wrong parameters.';
+            $output['errorCode'] = ErrorCode::ERROR_WRONG_PARAMETERS;
+            $output['errorMsg'] = ErrorCode::getErrText(ErrorCode::ERROR_WRONG_PARAMETERS);
+            //$output['errorCode'] = 400;
+            // $output['errorMsg'] = 'Wrong parameters.';
             return $output;
         }
         $username = $values['username'];
         $password = $values['password'];
         $userHostIp = isset($values['userHostIp']) ? $values['userHostIp'] : null;
-
-        $output = $this->doTokenUserLoginByPassword($username, $password, $userHostIp);
-
+        $ussrmodel=new User();
+        $userarray=$ussrmodel->getByAttributes(array('username'=>$username,'role' => StatCode::USER_ROLE_PATIENT));;
+        if(empty($userarray)){
+        //if (!User::model()->exists('username=:username AND role=:role and date_deleted is NULL', array(':username' => $username, ':role' => StatCode::USER_ROLE_PATIENT))) {
+            $output['errorCode'] =ErrorCode::ERROR_USER_NOT_FOUND;
+            $output['errorMsg'] = ErrorCode::getErrText(ErrorCode::ERROR_USER_NOT_FOUND);
+            return $output;
+        }
+        else {
+            $output = $this->doTokenUserLoginByPassword($username, $password, $userHostIp);
+        }
         return $output;
     }
 
@@ -345,27 +356,29 @@ class AuthManager {
     public function doTokenUserLoginByPassword($username, $password, $userHostIp = null) {
         //$output = array('status' => 'no','errorCode' => 0,'errorMsg' =>'' ,'results' => array()); // default status is false.
         $authUserIdentity = $this->authenticateUserByPassword($username, $password);
+
         if ($authUserIdentity->isAuthenticated) {
             // username and password are correct. continue to create AuthTokenUser.
             $user = $authUserIdentity->getUser();
             $userMacAddress = null;
             $deActivateFlag = true;
             //$tokenUser = $this->createTokenUser($user->getId(), $userHostIp, $userMacAddress, $deActivateFlag);
-            $tokenUser = $this->createTokenUser($user->getId(), $username, $userHostIp, $userMacAddress, $deActivateFlag);  //@2015-10-28 by Hou Zhen Chuan
-            if (isset($tokenUser)) {
-                $output['errorCode'] = 0;
-                $output['errorMsg'] = 'success';
-                $output['status'] = 'ok';
-                $output['results']['token'] = $tokenUser->getToken();
+            $token = $this->createTokenUser($user->getId());  //@2015-10-28 by Hou Zhen Chuan
+            if (isset($token)) {
+                $output['errorCode'] = ErrorCode::ERROR_NO;
+                $output['errorMsg'] = ErrorCode::getErrText(ErrorCode::ERROR_NO);
+                $output['results']['token'] = $token;
+
                 // TODO: log.
-            } else {
+           /* } else {
                 $output['errorCode'] = ErrorList::ERROR_TOKEN_CREATE_FAILED;
                 $output['errorMsg'] = '生成token失败!';
-                // TODO: log.
+
+            */
             }
         } else {
-            $output['errorCode'] = $authUserIdentity->errorCode;
-            $output['errorMsg'] = '用户名或密码不正确';
+            $output['errorCode'] = ErrorCode::ERROR_USER_PASSWORD;
+            $output['errorMsg'] = ErrorCode::getErrText(ErrorCode::ERROR_USER_PASSWORD);
         }
         return $output;
     }
@@ -479,10 +492,9 @@ class AuthManager {
     }
 
     //患者用户： USER_ROLE_PATIENT
-    public function createTokenUser($userId, $username, $userHostIp, $userMacAddress = null, $deActivateFlag = true) {
-
+    public function createTokenUser($userId) {
         $token = strtoupper(substr(str_shuffle(MD5(microtime())), 0, 32));
-        yii::app()->cache->set($token, $userId, 5184000);
+        Yii::$app->cache->set($token, $userId, 5184000);
         return $token;
     }
 

@@ -70,9 +70,7 @@ class AuthUserIdentity  extends User {
             } else {
                 $lastLogin = strtotime($this->user->getLastLoginTime());
             }
-            $this->setState('lastLoginTime', $lastLogin); //* Can be accessed by Yii::app()->user->lastLoginTime;
-            //$now = new Datetime("now");
-            //$user->setLastLoginTime($now->format('Y-m-d H:i:s'));
+          //  $this->setState('lastLoginTime', $lastLogin); //* Can be accessed by Yii::app()->user->lastLoginTime;
             $now = new \yii\db\Expression("NOW()");
             $this->user->setLastLoginTime($now);
             $this->user->update('last_login_time');

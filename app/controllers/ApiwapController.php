@@ -414,7 +414,8 @@ class ApiwapController extends \yii\web\Controller
                     $authMgr = new AuthManager();
                     $output = $authMgr->apiTokenUserLoginByPassword($values);
                 } else {
-                    $output['errorMsg'] = 'Wrong parameters.';
+                    $output['errorCode'] =ErrorCode::ERROR_WRONG_PARAMETERS;
+                    $output['errorMsg'] =ErrorCode::getErrText(ErrorCode::ERROR_WRONG_PARAMETERS);
                 }
             break;
             case 'usermobilelogin'://手机号和验证码登录
@@ -426,7 +427,8 @@ class ApiwapController extends \yii\web\Controller
                     $authMgr = new AuthManager();
                     $output = $authMgr->apiTokenUserLoginByMobile($values);
                 } else {
-                    $output['error_msg'] = 'Wrong parameters.';
+                    $output['errorCode'] =ErrorCode::ERROR_WRONG_PARAMETERS;
+                    $output['errorMsg'] =ErrorCode::getErrText(ErrorCode::ERROR_WRONG_PARAMETERS);
                 }
             break;
             case 'userresetpassword':    // rsest user password.
