@@ -423,7 +423,7 @@ class ApiwapController extends \yii\web\Controller
                     // get user ip from request.
                     $values = $post['userLogin'];
 
-                    $values['userHostIp'] = Yii::app()->request->userHostAddress;
+                    $values['userHostIp'] = Yii::$app->request->userHost;
                     $authMgr = new AuthManager();
                     $output = $authMgr->apiTokenUserLoginByMobile($values);
                 } else {

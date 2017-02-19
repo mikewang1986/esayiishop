@@ -101,22 +101,26 @@ class AuthManager {
             $authMgr = new AuthManager();
             $authSmsVerify = $authMgr->verifyCodeForMobileLogin($mobile, $verifyCode, $userHostIp);
             if ($authSmsVerify->isValid() === false) {
-                $output['status'] = EApiViewService::RESPONSE_NO;
-                $output['errorCode'] = ErrorList::BAD_REQUEST;
-                $output['errorMsg'] = $authSmsVerify->getError('code');
+                $output['errorCode'] = ErrorCode::ERROR_SMS_VERIFICATIONCODE;
+                $output['errorMsg'] = ErrorCode::getErrText(ErrorCode::ERROR_SMS_VERIFICATIONCODE);
                 return $output;
             }
         }
         $is_new_user=1;
-        if (!User::model()->exists('username=:username AND role=:role', array(':username' => $mobile, ':role' => StatCode::USER_ROLE_PATIENT))) {
+        $ussrmodel=new User();
+        $userarray=$ussrmodel->getByAttributes(array('username'=>$mobile,'role' => StatCode::USER_ROLE_PATIENT));
+        if(empty($userarray)){
+        //if (!User::model()->exists('username=:username AND role=:role', array(':username' => $mobile, ':role' => StatCode::USER_ROLE_PATIENT))) {
             $userMR = new UserManager();
             $password = md5(time());
             $user = $userMR->doRegisterUser($mobile, $password);
             if ($user->hasErrors()) {
                 // error, so return errors.
-                $output['status'] = EApiViewService::RESPONSE_NO;
-                $output['errorCode'] = ErrorList::BAD_REQUEST;
-                $output['errorMsg'] = $user->getFirstErrors();
+               // $output['status'] = EApiViewService::RESPONSE_NO;
+               // $output['errorCode'] = ErrorList::BAD_REQUEST;
+              //  $output['errorMsg'] = $user->getFirstErrors();
+                $output['errorCode'] = ErrorCode::ERROR_USER_REGISTER;
+                $output['errorMsg'] = ErrorCode::getErrText(ErrorCode::ERROR_USER_REGISTER);
                 return $output;
             }
             $is_new_user=2;
@@ -127,15 +131,15 @@ class AuthManager {
 
     public function apiTokenUserAutoLoginByMobile($mobile,$is_new_user=1) {
         // get user by $mobile from db.
-        $user = User::model()->getByUsernameAndRole($mobile, User::ROLE_PATIENT);
+        $usermodel=new User();
+        $user = $usermodel->getByUsernameAndRole($mobile, User::ROLE_PATIENT);
         if (is_null($user)) {
-            $output['status'] = EApiViewService::RESPONSE_NO;
-            $output['errorCode'] = ErrorList::BAD_REQUEST;
-            $output['errorMsg'] = '该用户不存在';
+            $output['errorCode'] = ErrorCode::ERROR_USER_NOT_FOUND;
+            $output['errorMsg'] = ErrorCode::getErrText(ErrorCode::ERROR_USER_NOT_FOUND);
             return $output;
         }
         // do auto login user.
-        $authTokenUser = $this->doTokenUserAutoLogin($user);
+       /* $authTokenUser = $this->doTokenUserAutoLogin($user);
         //$authTokenUser = $this->tokenUserMobileLogin($mobile);
         if ($authTokenUser->hasErrors()) {
             $errors = $authTokenUser->getFirstErrors();
@@ -147,6 +151,19 @@ class AuthManager {
             $output['errorCode'] = ErrorList::ERROR_NONE;
             $output['errorMsg'] = 'success';
             $output['results'] = array('token' => $authTokenUser->getToken(),'is_new_user'=> $is_new_user);
+        }
+        return $output;*/
+        // do auto login user.
+        $token = $this->createTokenUser($user->getId());
+        //$authTokenUser = $this->tokenUserMobileLogin($mobile);
+        if (isset($token)) {
+            // $output['status'] = EApiViewService::RESPONSE_OK;
+            //$output['errorCode'] = ErrorList::ERROR_NONE;
+            // $output['errorMsg'] = 'success';
+            $output['errorCode'] = ErrorCode::ERROR_NO;
+            $output['errorMsg'] =ErrorCode::getErrText(ErrorCode::ERROR_NO);
+            $output['results'] = array('token' => $token,'is_new_user'=> $is_new_user);
+
         }
         return $output;
     }
