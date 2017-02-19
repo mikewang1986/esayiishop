@@ -396,8 +396,7 @@ class ApiwapController extends \yii\web\Controller
             case 'userregister': // remote user register.
                 if (isset($post['userRegister'])) {
                     $values = $post['userRegister'];
-                    $values['userHostIp'] = Yii::app()->request->userHostAddress;
-                    //$values['agent_parmas'] = 'wap';
+                    $values['userHostIp'] = Yii::$app->request->userHost;
                     $userMgr = new UserManager();
                     $output = $userMgr->apiTokenUserRegister($values);
                 } else {

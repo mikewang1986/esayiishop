@@ -3,6 +3,8 @@ namespace app\models;
 use app\components\StatCode;
 use app\models\user\User;
 use app\models\auth\AuthTokenUser;
+use app\components\ErrorCode;
+
 class UserManager {
     public function createUserDoctor($mobile) {
         return $this->createUser($mobile, StatCode::USER_ROLE_DOCTOR);
@@ -216,11 +218,11 @@ class UserManager {
      * @return string
      */
     public function apiTokenUserRegister($values) {
-        $output = array('status' => 'no','errorCode' => 0,'errorMsg' =>'' ,'results' => array()); // default status is false.
+       // $output = array('status' => 'no','errorCode' => 0,'errorMsg' =>'' ,'results' => array()); // default status is false.
         // TODO: wrap the following method. first, validates the parameters in $values.
         if (isset($values['username']) === false || isset($values['password']) === false || isset($values['verify_code']) === false) {
-            $output['errorCode'] = ErrorList::BAND_REQUEST;
-            $output['errorMsg'] = 'Wrong parameters.';
+            $output['errorCode'] = ErrorCode::ERROR_WRONG_PARAMETERS;
+            $output['errorMsg'] = ErrorCode::getErrText(ErrorCode::ERROR_WRONG_PARAMETERS);
             return $output;
         }
         // assign parameters.
@@ -232,21 +234,26 @@ class UserManager {
         if (isset($values['autoLogin']) && $values['autoLogin'] == 1) {
             $autoLogin = true;
         }
-
         // Verifies AuthSmsVerify by using $mobile & $verifyCode.     手机验证码验证
         $authMgr = new AuthManager();
         $authSmsVerify = $authMgr->verifyCodeForRegister($mobile, $verifyCode, $userHostIp);
-        if ($authSmsVerify->isValid() === false) {
-            $output['errorMsg'] = $authSmsVerify->getError('code');
-            return $output;
-        }
-        // Check if username exists.
-        if (User::model()->exists('username=:username AND role=:role', array(':username' => $mobile, ':role' => StatCode::USER_ROLE_PATIENT))) {
-            $output['status'] = 'no';
-            $output['errorMsg'] = '该手机号已被注册';
-            return $output;
-        }
 
+       /* if ($authSmsVerify->isValid() === false) {
+            $output['errorCode'] = ErrorCode::ERROR_WRONG_SMSCODE_VERIFICATION;
+            $output['errorMsg'] = ErrorCode::getErrText(ErrorCode::ERROR_WRONG_SMSCODE_VERIFICATION);
+            return $output;
+        }*/
+
+
+        $ussrmodel=new User();
+        // Check if username exists.
+        $userarray=$ussrmodel->getByAttributes(array('username'=>$mobile,'role' => StatCode::USER_ROLE_PATIENT));
+       // if (User::model()->exists('username=:username AND role=:role', array(':username' => $mobile, ':role' => StatCode::USER_ROLE_PATIENT))) {
+        if(!empty($userarray)){
+            $output['errorCode'] = ErrorCode::ERROR_WRONG_USERNAME_REPEAT;
+            $output['errorMsg'] = ErrorCode::getErrText(ErrorCode::ERROR_WRONG_USERNAME_REPEAT);
+            return $output;
+        }
         // success.
         // Creates a new User model.
         $user = $this->doRegisterUser($mobile, $password);
@@ -260,12 +267,12 @@ class UserManager {
             }
             return $output;
         } else if ($autoLogin) {
+
             // auto login user and return token.
             $output = $authMgr->doTokenUserLoginByPassword($mobile, $password, $userHostIp);
         } else {
-            $output['status'] = 'ok';
-            $output['errorCode'] = 0;
-            $output['errorMsg'] = 'success';
+            $output['errorCode'] = ErrorCode::ERROR_NO;
+            $output['errorMsg'] = ErrorCode::getErrText(ErrorCode::ERROR_NO);
         }
         // deactive current smsverify.
         if (isset($authSmsVerify)) {
@@ -336,7 +343,7 @@ class UserManager {
     public function doRegisterUser($username, $password, $terms = 1, $activate = 1) {
         // create new User model and save into db.
         $model = new User();
-        $model->scenario = 'register';
+      //  $model->scenario = 'register';
         $model->username = $username;
         $model->role = StatCode::USER_ROLE_PATIENT;
         $model->password_raw = $password;
@@ -346,7 +353,6 @@ class UserManager {
             $model->setActivated();
         }
         $model->save();
-
         return $model;
     }
 

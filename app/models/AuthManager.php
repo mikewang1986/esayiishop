@@ -5,6 +5,7 @@ use app\apiservices\ErrorList;
 use app\components\StatCode;
 use app\models\auth\AuthUserIdentity;
 use app\models\auth\AuthTokenUser;
+use app\models\auth\AuthSmsVerify;
 class AuthManager {
 
     const ERROR_TOKEN_FAILED_CREATE = 101;  //  AuthTokenUser 创建失败
@@ -85,7 +86,6 @@ class AuthManager {
         $mobile = $values['username'];
         $verifyCode = $values['verify_code'];
         $userHostIp = $values['userHostIp'];
-
         if (isset($verifyCode)) {
             $authMgr = new AuthManager();
             $authSmsVerify = $authMgr->verifyCodeForMobileLogin($mobile, $verifyCode, $userHostIp);
@@ -246,12 +246,14 @@ class AuthManager {
      */
     public function verifyAuthSmsCode($mobile, $code, $actionType, $userIp) {
         // $userIp is not used.
-        $smsVerify = AuthSmsVerify::model()->getByMobileAndCodeAndActionType($mobile, $code, $actionType);
+        $AuthSmsVerify=new AuthSmsVerify();
+        $smsVerify = $AuthSmsVerify->getByMobileAndCodeAndActionType($mobile, $code, $actionType);
         if (is_null($smsVerify)) {
             $smsVerify = new AuthSmsVerify();
             $smsVerify->addError('code', AuthSmsVerify::getErrorMessage(AuthSmsVerify::ERROR_NOT_FOUND));
         } else {
-            $smsVerify->checkValidity(true,true);
+
+            $AuthSmsVerify->checkValidity(true,true);
         }
 
         return $smsVerify;
@@ -341,7 +343,7 @@ class AuthManager {
      * @return string AuthTokenUser.token.
      */
     public function doTokenUserLoginByPassword($username, $password, $userHostIp = null) {
-        $output = array('status' => 'no','errorCode' => 0,'errorMsg' =>'' ,'results' => array()); // default status is false.
+        //$output = array('status' => 'no','errorCode' => 0,'errorMsg' =>'' ,'results' => array()); // default status is false.
         $authUserIdentity = $this->authenticateUserByPassword($username, $password);
         if ($authUserIdentity->isAuthenticated) {
             // username and password are correct. continue to create AuthTokenUser.
