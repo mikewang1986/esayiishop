@@ -23,6 +23,10 @@ $config = [
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
+        'mongodb' => [
+            'class' => '\yii\mongodb\Connection',
+            'dsn' => 'mongodb://admin:admin@59.46.80.122:27017/myzd',
+        ],
         //memcache
         'mecache' => [
             'class' => 'yii\caching\MemCache',
@@ -30,13 +34,21 @@ $config = [
             'servers' => [
                 [
                     'host'=>'120.26.107.48',
-                   'port'=>11211,
-                   'weight'=>60,
+                    'port'=>11211,
+                    'weight'=>60,
                    // 'host' => 'localhost',
                  //   'port' => 11211,
                 ]
             ],
         ],
+        //微信接口
+        'wechat' => [
+            'class' => 'callmez\wechat\sdk\Wechat',
+            'appId' => 'wx90194fb519345987',
+            'appSecret' => '93368f5feae55fcfb0cb7b890f2f2159',
+            'token' => 'test1235'
+        ],
+
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
@@ -85,6 +97,10 @@ $config = [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
                 ],
+                [
+                    'class' => 'yii\log\DbTarget',  //使用数据库记录日志
+                    'levels' => ['error', 'warning'],
+                ]
             ],
         ],
         'db' => require(__DIR__ . '/db.php'),
