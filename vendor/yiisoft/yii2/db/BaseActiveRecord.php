@@ -589,6 +589,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function save($runValidation = true, $attributeNames = null)
     {
+
         if ($this->getIsNewRecord()) {
             return $this->insert($runValidation, $attributeNames);
         } else {

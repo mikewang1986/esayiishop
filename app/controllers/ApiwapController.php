@@ -20,6 +20,7 @@ use app\models\booking\BookingServiceConfig;
 use app\models\StatManager;
 use app\components\ErrorCode;
 use app\models\AppManager;
+
 class ApiwapController extends \yii\web\Controller
 {
     // Members
@@ -88,7 +89,6 @@ class ApiwapController extends \yii\web\Controller
         switch ($model) {
             case 'dataversion'://数据版本号
                 $output= new \stdClass();
-              //  $output->status=EApiViewService::RESPONSE_OK;
                 $output->errorCode=ErrorCode::ERROR_NO;
                 $output->errorMsg=ErrorCode::getErrText(ErrorCode::ERROR_NO);
                 $output->results=array(
@@ -108,6 +108,35 @@ class ApiwapController extends \yii\web\Controller
                 $overseasMgr = new OverseasManager();
                 $output = $overseasMgr->loadHospitalsJson();
                 break;*/
+            case "wechatinit":
+                $wechat = Yii::$app->wechat;
+                $wechat->valid();
+                exit;
+             break;
+            case 'getrcode':
+                $wechat = Yii::$app->wechat;
+                $qrcode = $wechat->createQrCode([
+                    'expire_seconds' => 604800,
+                    'action_name' => 'QR_SCENE',
+                    'action_info' => ['scene' => ['scene_id' => rand(1, 999999999)]]
+                ]);
+                //获取二维码
+                $imgRawData = $wechat->getQrCodeUrl($qrcode['ticket']);
+                var_dump($imgRawData);
+                exit;
+             break;
+            //得到关注者列表
+            case 'getmemberlist':
+                $wechat = Yii::$app->wechat;
+                var_dump($wechat->getMemberList());
+                exit;
+                break;
+            case 'getmemberinfo':
+                $wechat = Yii::$app->wechat;
+                $openid="oz9Tbjr82AUzuoH99SaqOp7nAt9g";
+                var_dump($wechat->getMemberInfo($openid));
+                exit;
+             break;
             case 'appversion'://android ,ios 版本号 参数  
                 $get = $_GET;
                 $appMgr = new AppManager();
@@ -422,7 +451,6 @@ class ApiwapController extends \yii\web\Controller
                 if (isset($post['userLogin'])) {
                     // get user ip from request.
                     $values = $post['userLogin'];
-
                     $values['userHostIp'] = Yii::$app->request->userHost;
                     $authMgr = new AuthManager();
                     $output = $authMgr->apiTokenUserLoginByMobile($values);
