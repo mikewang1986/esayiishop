@@ -20,7 +20,7 @@ use app\models\booking\BookingServiceConfig;
 use app\models\StatManager;
 use app\components\ErrorCode;
 use app\models\AppManager;
-
+use app\apiservices\api\ApiViewDiseaseCategory;
 class ApiwapController extends \yii\web\Controller
 {
     // Members
@@ -100,6 +100,7 @@ class ApiwapController extends \yii\web\Controller
                 $apiService = new ApiViewPatientLocalData();
                 $output = $apiService->loadApiViewData();
             break;
+
            /* case 'faculty'://科室
                 $facultyMgr = new FacultyManager();
                 $output = $facultyMgr->loadFacultyList();

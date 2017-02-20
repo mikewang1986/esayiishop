@@ -1,5 +1,6 @@
 <?php
-
+namespace app\apiservices;
+use Yii;
 class ApiViewDisease extends EApiViewService {
 
     private $diseaseId;
@@ -10,12 +11,10 @@ class ApiViewDisease extends EApiViewService {
     private $limitExpteam = 1;
     private $limitHospital = 3;
     private $limitDoctor = 4;
-
     public function __construct($diseaseId) {
         parent::__construct();
         $this->diseaseId = $diseaseId;
     }
-
     /**
      * loads data by the given $id (Disease.id).
      * @param integer $diseaeId Disease.id     
@@ -25,19 +24,15 @@ class ApiViewDisease extends EApiViewService {
         $this->loadDisease();
         // load ExpertTeams.
         $this->loadExpertTeams();
-        // load Hospitals.
-        //  $this->loadHospitals();
-        // load Hospital's Doctors.
-        //  $this->loadHospitalDoctors();           
     }
 
     protected function createOutput() {
         if (is_null($this->output)) {
             $this->output = array(
-                'status' => self::RESPONSE_OK,
+              //  'status' => self::RESPONSE_OK,
                 'disease' => $this->disease,
                 'expertteams' => $this->expertteams,
-                'doctorUrl' => Yii::app()->createAbsoluteUrl('/api/list', array('model' => 'doctor', 'disease' => $this->diseaseId))
+                'doctorUrl' => Yii::$app->urlManager->createAbsoluteUrl('/api/list', array('model' => 'doctor', 'disease' => $this->diseaseId))
                     //    'hospitals' => $this->hospitals
             );
         }
@@ -114,36 +109,13 @@ class ApiViewDisease extends EApiViewService {
         }
     }
 
-    /*
-      private function loadHospitalsWithDoctors($diseaseId) {
-      $db = Yii::app()->db;
-      $sql = "SELECT h.`id` AS hpId, p.`id` AS deptId, dr.`id` AS docId
-      FROM hospital h
-      LEFT JOIN hospital_department p ON p.`hospital_id` = h.`id`
-      LEFT JOIN hospital_dept_doctor_join dpj ON dpj.`hp_dept_id` = p.`id`
-      LEFT JOIN doctor dr ON dr.`id` = dpj.`doctor_id`
-      LEFT JOIN disease_doctor_join drj ON drj.`doctor_id` = dr.`id`
-      WHERE drj.`disease_id`= :diseaseId
-      AND h.`id` IN (
-      SELECT hospital_id FROM disease_hospital_join WHERE disease_id = :diseaseId ORDER BY display_order
-      );";
-      $results = $db->createCommand($sql)->query(array(':diseaseId' => $diseaseId));
-      foreach ($results as $result) {
-      var_dump($result);
-      }
-      }
-     * 
-     */
-
     private function setDisease(Disease $model) {
         $d = new stdClass();
         $d->id = $model->getId();
         $d->name = $model->getName();
         $d->desc = $model->getDescription();
-
         $this->disease = $d;
     }
-
     /**
      * 
      * @param array $models array of ExpertTeam models.
@@ -194,7 +166,7 @@ class ApiViewDisease extends EApiViewService {
               }
               }
               }
-             * 
+             *
              */
             $this->expertteams[] = $team;
         }
