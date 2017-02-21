@@ -3,6 +3,7 @@ namespace app\apiservices\api;
 use Yii;
 use app\apiservices\EApiViewService;
 use app\models\DiseaseManager;
+use app\components\ErrorCode;
 class ApiViewDiseaseCategory extends EApiViewService {
     public function __construct() {
         parent::__construct();
@@ -23,9 +24,10 @@ class ApiViewDiseaseCategory extends EApiViewService {
     public function loadDiseaseCategory(){
         $disMgr = new DiseaseManager();
         $models = $disMgr->loadDiseaseCategoryListV8();//新增12个科室
+
         $navList = array();
         foreach ($models as $model) {
-            $data = new stdClass();
+            $data = new \stdClass();
             $data->id = $model->getCategoryId();
             $data->name = $model->getCategoryName();
             // sub group.

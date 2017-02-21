@@ -1,5 +1,9 @@
 <?php
-
+namespace app\apiservices\api;
+use Yii;
+use app\apiservices\EApiViewService;
+use app\models\disease\DiseaseCategory;
+use app\components\ErrorCode;
 class ApiViewSubCategory extends EApiViewService {
     private $sub_category;
     public function __construct($id) {
@@ -19,9 +23,9 @@ class ApiViewSubCategory extends EApiViewService {
     protected function createOutput() {
         if (is_null($this->output)) {
             $this->output = array(
-                'status' => self::RESPONSE_OK,
-                'errorCode' => 0,
-                'errorMsg' => 'success',
+               // 'status' => self::RESPONSE_OK,
+                'errorCode' => ErrorCode::ERROR_NO,
+                'errorMsg' => ErrorCode::getErrText(ErrorCode::ERROR_NO),
                 'results' => $this->results,
             );
         }
@@ -33,8 +37,8 @@ class ApiViewSubCategory extends EApiViewService {
      */
     private function loadSubCategory() {
 
-//         $model = DiseaseCategory::model()->getByAttributes(array('sub_cat_id'=>$this->sub_category, 'app_version'=>7));
-        $model = DiseaseCategory::model()->getByAttributes(array('sub_cat_id'=>$this->sub_category, 'app_version'=>8));
+         $DiseaseCategory=new DiseaseCategory();
+        $model = $DiseaseCategory->getByAttributes(array('sub_cat_id'=>$this->sub_category, 'app_version'=>8));
         if (is_null($model)) {
             $this->throwNoDataException();
         }
@@ -43,7 +47,7 @@ class ApiViewSubCategory extends EApiViewService {
     }
 
     private function setSubCategory(DiseaseCategory $model) {
-        $data = new stdClass();
+        $data = new \stdClass();
         $data->id = $model->getSubCategoryId();
         $data->name = $model->getSubCategoryName();
         $data->catId = $model->getCategoryId();

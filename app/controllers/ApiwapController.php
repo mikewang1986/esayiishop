@@ -21,6 +21,7 @@ use app\models\StatManager;
 use app\components\ErrorCode;
 use app\models\AppManager;
 use app\apiservices\api\ApiViewDiseaseCategory;
+use app\apiservices\api\ApiViewSubCategory;
 class ApiwapController extends \yii\web\Controller
 {
     // Members
