@@ -22,6 +22,7 @@ use app\components\ErrorCode;
 use app\models\AppManager;
 use app\apiservices\api\ApiViewDiseaseCategory;
 use app\apiservices\api\ApiViewSubCategory;
+use app\models\BookingManager;
 class ApiwapController extends \yii\web\Controller
 {
     // Members
@@ -624,11 +625,14 @@ class ApiwapController extends \yii\web\Controller
                 }
              break;
             case   'cancelFileAll':
+
                     if (isset($post['file'])) {
                         $values['token'] = $this->em_getallheaders();
+                      //  $values['token']="D16DB100F05E58FF5CAE6DDF8077E96F";;
                         $user = $this->userLoginRequired($values);
                         $userId=$user->getId();
                         $bookMgr = new BookingManager();
+
                         $output = $bookMgr->cancelallfile($post['file'],$userId);
                     }
                     else {
@@ -670,8 +674,9 @@ class ApiwapController extends \yii\web\Controller
         $post = $_POST;
     
         if (empty($_POST)) {
+
             // application/json
-            $post = CJSON::decode($this->getPostData());
+            $post = BaseJson::decode($this->getPostData());
             
         } else {
             // application/x-www-form-urlencoded
@@ -702,12 +707,12 @@ class ApiwapController extends \yii\web\Controller
                 break;
                 case 'cancelFile':
                         $values['token'] = $this->em_getallheaders();
+                      //  $values['token']="D16DB100F05E58FF5CAE6DDF8077E96F";;
                         $user = $this->userLoginRequired($values);
                         $userId=$user->getId();
                         $bookMgr = new BookingManager();
                         $output = $bookMgr->cancelfile($id,$userId);
-                break; 
-              
+                break;
                 case 'profile'://个人信息（基本信息）
                     if (isset($post['profile'])) {
                         $values = $post['profile'];
@@ -739,32 +744,22 @@ class ApiwapController extends \yii\web\Controller
     private function userLoginRequired($values)
     {
         $userMgr = new UserManager();
-        $user = $userMgr->loadUserAndTokenBytoken($values['token']);
-        $values['username'] = (isset($user->token->username)) ? $user->token->username: NULL;
+        $token = $userMgr->checkToken($values['token']);
         $output = new \stdClass();
-        if (isset($values['username']) === false || isset($values['token']) === false) {
-           // $output->status = EApiViewService::RESPONSE_NO;
-            $output->errorCode = ErrorList::FORBIDDEN;
-            $output->errorMsg = '用户没有登陆或者没有该用户';
+        if($token === false){
+            $output->errorCode = ErrorCode::ERROR_TOKEN;
+            $output->errorMsg = ErrorCode::getErrText(ErrorCode::ERROR_TOKEN);
             $this->renderJsonOutput($output);
         }
-        //加入过期
-        if(!$this->token_expired($user->token->time_expiry)){
-           // $output->status =EApiViewService::RESPONSE_NO;
-            $output->errorCode = ErrorList::UNAUTHORIZED;
-            $output->errorMsg = 'token过期';
-            $this->renderJsonOutput($output);
-        }
-       $authMgr = new AuthManager();
-       $authUserIdentity = $authMgr->authenticateWapUserByToken($values['username'], $values['token'], $agent = 'wap');
-       if (is_null($authUserIdentity)) {
-            //$output->status =EApiViewService::RESPONSE_NO;
-            $output->errorCode = ErrorList::BAD_REQUEST;
-            $output->errorMsg = '用户名或token不正确';
-            $this->renderJsonOutput($output);
-        }
+        $user = $userMgr->getUserBytoken($token);
 
-        return $authUserIdentity->getUser();
+        if (!isset($user)) {
+            $output->errorCode = ErrorCode::ERROR_USER_NOT_FOUND;
+            $output->errorMsg = ErrorCode::getErrText(ErrorCode::ERROR_USER_NOT_FOUND);
+            $this->renderJsonOutput($output);
+        }else{
+            return $user;
+        }
     }
     
 

@@ -4,7 +4,7 @@ use app\components\StatCode;
 use app\models\user\User;
 use app\models\auth\AuthTokenUser;
 use app\components\ErrorCode;
-
+use Yii;
 class UserManager {
     public function createUserDoctor($mobile) {
         return $this->createUser($mobile, StatCode::USER_ROLE_DOCTOR);
@@ -258,7 +258,6 @@ class UserManager {
         // success.
         // Creates a new User model.
         $user = $this->doRegisterUser($mobile, $password);
-
         if ($user->hasErrors()) {
             // error, so return errors.
             $array= $user->getFirstErrors();
@@ -389,6 +388,20 @@ class UserManager {
      */
     public function doLogin(UserLoginForm $form) {
         return ($form->validate() && $form->login());
+    }
+    public function checkToken($token)
+    {
+        return Yii::$app->cache->get($token);
+    }
+
+    public function getUserBytoken($token){
+        $usermodel=new User;
+        $model =$usermodel->getById($token);
+        if (is_null($model)) {
+            return null;
+        } else {
+            return $model;
+        }
     }
 
     /**

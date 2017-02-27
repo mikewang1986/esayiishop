@@ -181,14 +181,14 @@ abstract class EActiveRecord extends \yii\db\ActiveRecord {
      * Sample Query: select * from table where $field IN $values.
      */
 
-    public function getAllByInCondition($field, $values, $with = null) {
+    public function getAllByInCondition($field, $values, $with = null,$classname="") {
         if (is_array($values) === false) {
             $values = array($values);
         }
-        $criteria = new \yii\db\ActiveQuery();
-        $criteria->andWhere('t.date_deleted is NULL');
+        $criteria = new \yii\db\ActiveQuery($classname);
+        $criteria->andWhere('date_deleted is NULL');
         $idsstr=arrayToCsv($values);
-        $criteria->andWhere($field, $values);
+        $criteria->andWhere(array($field=>$values));
         if (is_array($with)) {
             $criteria->with($with);
         }
