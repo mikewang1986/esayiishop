@@ -1,10 +1,13 @@
 <?php
-
+namespace app\apiservices\api;
+use Yii;
+use app\apiservices\EApiViewService;
+use app\components\ErrorCode;
+use app\models\hospital\TopHospital;
 class ApiViewTopHospital extends EApiViewService {
     private $pageSize = 20;
     private $tophospitals;
     private $options;
-    
     public function __construct($values) {
            parent::__construct();
            if(empty($values['page'])){
@@ -16,25 +19,23 @@ class ApiViewTopHospital extends EApiViewService {
            
        
     }
-
     protected function loadData() {
         $this->loadTopHospitals();
     }
-
     protected function createOutput() {
         if (is_null($this->output)) {
             $this->output = array(
-                'status' => self::RESPONSE_OK,
-                'errorCode' => 0,
-                'errorMsg' => 'success',
+               // 'status' => self::RESPONSE_OK,
+                'errorCode' => ErrorCode::ERROR_NO,
+                'errorMsg' => ErrorCode::getErrText(ErrorCode::ERROR_NO),
                 'results' => $this->tophospitals,
             );
         }
     }
 
     private function loadTopHospitals() {
-            $topHospitals = array();
-            $topHospitals = TopHospital::model()->getAll($with = null,$this->options);
+            $topHospital =new TopHospital();
+            $topHospitals =  $topHospital->getAll($with = null,$this->options,'app\models\hospital\TopHospital');
             if (arrayNotEmpty($topHospitals)) {
                 $this->setTopHospitals($topHospitals);
             }
@@ -42,7 +43,7 @@ class ApiViewTopHospital extends EApiViewService {
     
     private function setTopHospitals(array $models) {
         foreach ($models as $model) {
-            $data = new stdClass();
+            $data = new \stdClass();
             $data->id = $model->getId();
             $data->hospital_id = $model->getHospitalId();
             $data->hospital_name = $model->getHospitalName();

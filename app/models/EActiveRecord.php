@@ -196,9 +196,9 @@ abstract class EActiveRecord extends \yii\db\ActiveRecord {
         //return($this->findAll($criteria));
     }
 
-    public function getAll($with = null, $options = null) {
-        $criteria = new \yii\db\ActiveQuery();
-        $criteria->andWhere('t.date_deleted is NULL');
+    public function getAll($with = null, $options = null,$classname="") {
+        $criteria = new \yii\db\ActiveQuery($classname);
+        $criteria->andWhere('date_deleted is NULL');
         if (is_array($with)) {
             $criteria->with($with);
         }
