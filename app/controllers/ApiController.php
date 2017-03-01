@@ -24,7 +24,9 @@ use app\apiservices\api\ApiViewDiseaseCategory;
 use app\apiservices\api\ApiViewSubCategory;
 use app\models\BookingManager;
 use app\apiservices\api\ApiViewTopHospital;
-class ApiwapController extends \yii\web\Controller
+//加入医生端接口
+use app\apiservices\api\ApiViewSpecailTopic;
+class ApiController extends \yii\web\Controller
 {
     // Members
     /**
@@ -103,15 +105,7 @@ class ApiwapController extends \yii\web\Controller
                 $apiService = new ApiViewPatientLocalData();
                 $output = $apiService->loadApiViewData();
             break;
-
-           /* case 'faculty'://科室
-                $facultyMgr = new FacultyManager();
-                $output = $facultyMgr->loadFacultyList();
-                break;
-            case 'overseas'://医院
-                $overseasMgr = new OverseasManager();
-                $output = $overseasMgr->loadHospitalsJson();
-                break;*/
+            //微信这块
             case "wechatinit":
                 $wechat = Yii::$app->wechat;
                 $wechat->valid();
@@ -284,6 +278,11 @@ class ApiwapController extends \yii\web\Controller
                 $values = $_GET;
                 $apiService = new ApiViewExpertsShow($values);
                 $output = $apiService->loadApiViewData();
+             break;
+            /*************** 医生端加入*******************************/
+            case 'specialtopic'://发现
+                $apiService = new ApiViewSpecailTopic();
+                $output = $apiService->loadApiViewData();
                 break;
             default:
                 // Model not implemented error
@@ -346,6 +345,7 @@ class ApiwapController extends \yii\web\Controller
                 $output = $apiService->loadApiViewData();
                 break;
             case 'userbooking':
+
                 $values = $_GET;
                 $values['token'] = $this->em_getallheaders();
                 $user = $this->userLoginRequired($values,true);
@@ -932,10 +932,23 @@ else {
      */
     private function em_getallheaders()
     {
+
         if (! function_exists('getallheaders')) {
-                
+
             function getallheaders()
             {
+
+                if (isset($_SERVER['PHP_AUTH_DIGEST'])) {
+                    $hearders['AUTHORIZATION'] = $_SERVER['PHP_AUTH_DIGEST'];
+                } elseif (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
+                    $hearders['AUTHORIZATION'] = base64_encode($_SERVER['PHP_AUTH_USER'] . ':' . $_SERVER['PHP_AUTH_PW']);
+                }
+                if (isset($_SERVER['CONTENT_LENGTH'])) {
+                    $hearders['CONTENT-LENGTH'] = $_SERVER['CONTENT_LENGTH'];
+                }
+                if (isset($_SERVER['CONTENT_TYPE'])) {
+                    $hearders['CONTENT-TYPE'] = $_SERVER['CONTENT_TYPE'];
+                }
                 foreach ($_SERVER as $name => $value) {
                     if (substr($name, 0, 5) == 'HTTP_') {
                         $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
@@ -945,7 +958,6 @@ else {
             }
         }
         $hearders = getallheaders();
-
         $token = isset($hearders['Authorization']) ? $hearders['Authorization'] : '';
         return $token;
     }
